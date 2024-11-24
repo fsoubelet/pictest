@@ -7,11 +7,68 @@ authors = [
     { name = "Felix Soubelet", email = "felix.soubelet@protonmail.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "joblib>=1.4",
+    "numba>=0.60",
+    "numpy>=2.0",
+    "scipy>=1.14",
+    "xsuite>=0.19",
+]
 
-[project.scripts]
-pictest = "pictest:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+
+# ----- Dev Tools Configuration ----- #
+
+[tool.isort]
+atomic = true
+ensure_newline_before_comments = true
+filter_files = true
+force_grid_wrap = 0
+force_single_line = false
+include_trailing_comma = true
+known_first_party = "pyhdtoolkit"
+known_third_party = "pytest"
+line_length = 100
+lines_between_types = 1
+multi_line_output = 3
+use_parentheses = true
+profile = "black"
+
+[tool.black]
+line-length = 100
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | tests/.*/setup.py
+  | acc-models-lhc
+)/
+'''
+
+[tool.ruff]
+target-version = "py310"  # Assume Python 3.10+.
+line-length = 100
+exclude = ["pyhdtoolkit/cpymadtools/lhc/__init__.py"]
+
+[tool.ruff.lint]
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+ignore = [
+  "E501",  # line-too-long
+  "FBT001",  # boolean-type-hint-positional-argument
+  "FBT002",  # boolean-default-value-positional-argument
+  "PT019",  # pytest-fixture-param-without-value (but suggested solution fails)
+]
