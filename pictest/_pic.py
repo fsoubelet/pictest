@@ -43,8 +43,8 @@ class IBSParticleInCell(IBSKick):
         longitudinal coordinate.
     delta_t : float
         The time step of the IBS effect application,
-        in [s]. To be obtained from the previous element's
-        length and the particles' velocity (L / v).
+        in [s]. Obtained from the distance from the
+        previous and the particles' velocity (L / v).
     max_collisions : int | None
         The max number of collisions to perform per cell.
         Will be `None` unless the chosen method needs it.
