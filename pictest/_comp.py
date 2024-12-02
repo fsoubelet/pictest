@@ -47,9 +47,10 @@ class PICTRACK(xt.BeamElement):
         "nz": xo.Int16,
         "delta_t": xo.Float64,
         "max_collisions": xo.Int16,
+        "_attributions": xo.Int64[:],
     }
 
-    _extra_c_sources = [Path(__file__).parent / "_pic.h"]
+    _extra_c_sources = [Path(__file__).parent / "kernels" / "_pic.h"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
