@@ -83,6 +83,3 @@ class PICTRACK(xt.BeamElement):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-    def attribute_particles_to_cells(self, mesh: MeshGridProperties, particles: xt.Particles):
-        self.attribute_cells(mesh, particles)  # write values in self._attributions
