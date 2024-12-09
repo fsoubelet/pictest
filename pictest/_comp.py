@@ -8,6 +8,21 @@ import xobjects as xo
 import xtrack as xt
 
 
+class MeshGridProperties(xo.Struct):
+    nx = xo.Int32
+    ny = xo.Int32
+    nz = xo.Int32
+    minx = xo.Float64
+    maxx = xo.Float64
+    miny = xo.Float64
+    maxy = xo.Float64
+    minz = xo.Float64
+    maxz = xo.Float64
+    delta_x = xo.Float64
+    delta_y = xo.Float64
+    delta_z = xo.Float64
+
+
 class PICTRACK(xt.BeamElement):
     r"""
     Beam element that applies IBS effects to particles in a PIC-like
@@ -47,10 +62,27 @@ class PICTRACK(xt.BeamElement):
         "nz": xo.Int16,
         "delta_t": xo.Float64,
         "max_collisions": xo.Int16,
-        "_attributions": xo.Int64[:],
+        "_attributions": xo.Int16[:],
     }
 
-    _extra_c_sources = [Path(__file__).parent / "kernels" / "_pic.h"]
+    _extra_c_sources = [
+        Path(__file__).parent / "kernels" / "_pic.h",
+        Path(__file__).parent / "kernels" / "_attribution.h",
+    ]
+
+    # Some extra kernels we define - per particle (for cell attributions)
+    _per_particle_kernels = {
+        "attribute_cells": xo.Kernel(
+            c_name="PICTRACK_attribute_cells",
+            args=[
+                xo.Arg(xo.ThisClass, name="el"),
+                xo.Arg(MeshGridProperties, name="mesh"),
+            ],
+        )
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def attribute_particles_to_cells(self, mesh: MeshGridProperties, particles: xt.Particles):
+        self.attribute_cells(mesh, particles)  # write values in self._attributions
