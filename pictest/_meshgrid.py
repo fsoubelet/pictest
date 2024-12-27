@@ -1,5 +1,5 @@
 """
-Meshgrid related utility.
+Meshgrid related utility: class, limits, creation.
 """
 
 from __future__ import annotations

@@ -1,5 +1,5 @@
 """
-Cells related utility.
+Cells related utility: attributions, grouping, etc.
 """
 
 from __future__ import annotations

@@ -1,5 +1,5 @@
 """
-PIC IBS functionality.
+PIC IBS functionality: prototype element.
 """
 
 from __future__ import annotations

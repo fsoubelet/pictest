@@ -1,5 +1,5 @@
 """
-Collisions related utility.
+Collisions related utility: momentum delta, particle to particle, cell scattering.
 """
 
 from __future__ import annotations
