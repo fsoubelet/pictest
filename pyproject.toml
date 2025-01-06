@@ -1,12 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "pictest/__init__.py"
+
 [project]
 name = "pictest"
-version = "0.1.0"
-description = "Add your description here"
 readme = "README.md"
+description = "Prototype for IBS PIC"
 authors = [
     { name = "Felix Soubelet", email = "felix.soubelet@protonmail.com" }
 ]
-requires-python = ">=3.12"
+dynamic = ["version"]
+requires-python = ">=3.10"
+
 dependencies = [
     "joblib>=1.4",
     "matplotlib>=3.10.0",
@@ -15,11 +23,6 @@ dependencies = [
     "scipy>=1.14",
     "xsuite>=0.19.10",
 ]
-
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
 
 
 # ----- Dev Tools Configuration ----- #
@@ -62,7 +65,6 @@ exclude = '''
 [tool.ruff]
 target-version = "py310"  # Assume Python 3.10+.
 line-length = 100
-exclude = ["pyhdtoolkit/cpymadtools/lhc/__init__.py"]
 
 [tool.ruff.lint]
 # Allow unused variables when underscore-prefixed.
