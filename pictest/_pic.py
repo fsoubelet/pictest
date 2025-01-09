@@ -78,9 +78,6 @@ class IBSParticleInCell(IBSKick):
                     until a provided maximum number of collisions
                     has been performed. If chosen, one should provide
                     'max_collisions'.
-                - 'allpairs': every single combination of particle
-                    pair is determined and then used for collision,
-                    in each mesh cell.
                 - 'oneperpart': pairs are drawn randomly once and
                     each particle will collide exactly once. If a
                     cell contains an odd number of particles then
@@ -92,6 +89,9 @@ class IBSParticleInCell(IBSKick):
         kwargs : dict
             If the chosen method is 'maxcol', then an additional
             argument 'max_collisions' is expected, as an integer.
+            Kwargs are inspected for a boolean 'use_delta' which
+            determines if the longitudinal momentum is to be used
+            for the meshgrid instead of the zeta coordinate.
         """
         # ----------------------------------------------
         # Make sure we have a valid method, and max_collisions if relevant
