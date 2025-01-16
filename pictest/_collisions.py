@@ -212,6 +212,50 @@ def scatter_cell_onecoll_perpart(
 
 
 @numba.jit
+def nb_takizuka_abe_collision_deltas(
+    px1: numba.float64,  # type: ignore
+    px2: numba.float64,  # type: ignore
+    py1: numba.float64,  # type: ignore
+    py2: numba.float64,  # type: ignore
+    delta1: numba.float64,  # type: ignore
+    delta2: numba.float64,  # type: ignore
+) -> tuple[numba.float64, numba.float64, numba.float64]:  # type: ignore
+    """
+    Compute momentum deltas for a two-article Coulomb collision, trying to stay
+    exactly on the formulae from Takizuka and Abe. This is a compiled function
+    to be used in the main loop of the PIC simulation.
+
+    Notes
+    -----
+    In here I will be using the exact variable names of the T&A paper,
+    but try to comment as much as possible to explain things.
+
+    Parameters
+    ----------
+    px1 : float64
+        Horizontal momentum of the first particle of the pair.
+    px2 : float64
+        Horizontal momentum of the second particle of the pair.
+    py1 : float64
+        Vertical momentum of the first particle of the pair.
+    py2 : float64
+        Vertical momentum of the second particle of the pair.
+    delta1 : float64
+        Momentum deviation of the first particle of the pair.
+    delta2 : float64
+        Momentum deviation of the second particle of the pair.
+
+    Returns
+    -------
+    deltas : tuple[float64, float64, float64]
+        The momentum deltas in horizontal, vertical
+        and longitudinal momenta. These are already the
+        amount to apply to particles.
+    """
+    pass
+
+
+@numba.jit
 def nb_coulomb_collision_deltas(
     px1: numba.float64,  # type: ignore
     px2: numba.float64,  # type: ignore
