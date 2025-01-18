@@ -253,11 +253,18 @@ def nb_takizuka_abe_collision_deltas(
         and longitudinal momenta. These are already the
         amount to apply to particles.
     """
+    # TODO: for Eq. (8a) compute the Coulomb log for the whole bunch and THEN use that value for every cell
     # ----------------------------------------------
     # Some variables definitions from T&A
-    ux = (px1 - px2) / mass0  # from Eq. (1) ux = vx1 - vx2 = (px1 / m) - (px2 / m) = (px1 - px2) / m
-    uy = (py1 - py2) / mass0  # from Eq. (1) uy = vy1 - vy2 = (py1 / m) - (py2 / m) = (py1 - py2) / m
-    uz = (delta1 - delta2) / mass0  # from Eq. (1) un = vn1 - vn2 = (delta1 / m) - (delta2 / m) = (delta1 - delta2) / m
+    ux = (
+        px1 - px2
+    ) / mass0  # from Eq. (1) ux = vx1 - vx2 = (px1 / m) - (px2 / m) = (px1 - px2) / m
+    uy = (
+        py1 - py2
+    ) / mass0  # from Eq. (1) uy = vy1 - vy2 = (py1 / m) - (py2 / m) = (py1 - py2) / m
+    uz = (
+        delta1 - delta2
+    ) / mass0  # from Eq. (1) un = vn1 - vn2 = (delta1 / m) - (delta2 / m) = (delta1 - delta2) / m
     # ----------------------------------------------
     # THEN WE NEED TO SOLVE FOR THETA and PHI in Eq. (2)
     # We know the following two relations
@@ -266,11 +273,11 @@ def nb_takizuka_abe_collision_deltas(
     # with 0 mean and a variance according to Eq. (8a) (remember that
     # alpha and beta species are the same species of particles here):
     # variance = delta_t * (charge_alpha**2 * charge_beta**2 * n_l * coulog) / (8 * pi * epsilon_0**2 * m**2 * v**3)
-    # In determination of pairs we read 
+    # In determination of pairs we read
     # ----------------------------------------------
     # We want to compute deltaux, deltauy, deltauz from Eq (4.a) of T&A
     # We first need to compute U_T defined below Eq. (4d)
-    # U_T = 
+    # U_T =
     pass
 
 
@@ -388,3 +395,8 @@ def nb_coulomb_collision_deltas(
     # Return the deltas, values already divided by two
     # (this is directly to be added to particle1, removed from particle2)
     return (deltap1cmx / 2, deltap1cmy / 2, deltap1cmz / 2)
+
+
+# ----- Private Helpers for Takizuka and Abe ----- #
+
+
