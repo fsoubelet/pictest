@@ -400,3 +400,36 @@ def nb_coulomb_collision_deltas(
 # ----- Private Helpers for Takizuka and Abe ----- #
 
 
+@numba.jit
+def _compute_phi(
+    ux: numba.float64,  # type: ignore
+    uy: numba.float64,  # type: ignore
+) -> numba.float64:  # type: ignore
+    """
+    Solves the second system of Eq (2) in Takizuka and Abe to
+    determine the value of phi. An important consideration is
+    that phi - as an angle - has to be positive. We will then
+    try the first root of the equation and if it is negative,
+    we will return the second root instead.
+
+    See my solving notebook for the derivation of the formula.
+
+    Parameters
+    ----------
+    ux : float64
+        The horizontal velocity difference of the particles.
+    uy : float64
+        The vertical velocity difference of the particles.
+    uz : float64
+        The longitudinal velocity difference of the particles.
+
+    Returns
+    -------
+    phi : float64
+        The value of phi, the angle between ux and ut, in radians.
+    """
+    first_root = -2 * np.arctan((ux - np.sqrt(ux**2 + uy**2)) / uy)
+    if first_root > 0:
+        return first_root
+    return -2 * np.arctan((ux + np.sqrt(ux**2 + uy**2)) / uy)
+
