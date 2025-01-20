@@ -409,13 +409,13 @@ def _compute_phi(
     Solves the second system of Eq (2) in Takizuka and Abe to
     determine the value of phi. An important consideration is
     that phi - as an angle - has to be positive. We will then
-    try the first root of the equation and if it is negative,
-    we will return the second root instead.
+    try the first root of the equation and if its value is not
+    positive we will return the second root instead.
 
     See my solving notebook for the derivation of the formula.
     The roots' analytical forms were determined with sympy and
     the validity of the written solutions (decomposed assembled
-    terms) was verified just the same. 
+    terms) was verified just the same.
 
     Parameters
     ----------
@@ -431,11 +431,20 @@ def _compute_phi(
     phi : float64
         The value of phi, the angle between ux and ut, in radians.
     """
-    # The two roots are the same with only a sign difference in the atan
-    first_root = -2 * np.arctan((ux - np.sqrt(ux**2 + uy**2)) / uy)
-    if first_root > 0:
+    # Both roots differ by only the sign in front
+    # of the square root term in the atan
+    # ----------------------------------------------
+    # Define term used several times to avoid recomputing
+    sqrt_term = np.sqrt(ux**2 + uy**2)
+    # ----------------------------------------------
+    # Attempt the first root of the equation
+    first_root = -2 * np.arctan((ux - sqrt_term) / uy)
+    if first_root >= 0:
         return first_root
-    return -2 * np.arctan((ux + np.sqrt(ux**2 + uy**2)) / uy)
+    # ----------------------------------------------
+    # Otherwise attempt the second root of the equation
+    second_root = -2 * np.arctan((ux + sqrt_term) / uy)
+    return second_root
 
 
 @numba.jit
@@ -459,7 +468,7 @@ def _compute_theta(
     See my solving notebook for the derivation of the formula.
     The roots' analytical forms were determined with sympy and
     the validity of the written solutions (decomposed assembled
-    terms) was verified just the same. 
+    terms) was verified just the same.
 
     Parameters
     ----------
@@ -472,6 +481,8 @@ def _compute_theta(
     phi : float64
         The angle between ux and ut, see figure
     """
+    # Both roots differ by only the sign in front
+    # of the square root term in the atan
     # ----------------------------------------------
     # Define term used everywhere to avoid recomputing
     tan_phi_2 = np.tan(phi / 2)  # compute only once
@@ -485,21 +496,26 @@ def _compute_theta(
     term_six = 4 * uy**2 * tan_phi_2**2
     term_seven = uz**2 * tan_phi_2**4
     term_eight = 2 * uz**2 * tan_phi_2**2
+    # ----------------------------------------------
+    # Define some common terms to both roots
+    sqrt_term = np.sqrt(
+        term_two
+        - term_three
+        + ux**2
+        - term_four
+        + term_five
+        + term_six
+        + term_seven
+        + term_eight
+        + uz**2
+    )
     denominator = -ux * tan_phi_2**2 + ux + 2 * uy * tan_phi_2
     # ----------------------------------------------
     # Attempt the first root of the equation
-    # fmt: off
-    first_root = -2 * np.atan(
-        (term_one + uz - np.sqrt(term_two - term_three + ux**2 - term_four + term_five + term_six + term_seven + term_eight + uz**2))
-        / denominator
-    )
+    first_root = -2 * np.atan((term_one + uz - sqrt_term) / denominator)
     if first_root >= 0:
         return first_root
     # ----------------------------------------------
     # Otherwise attempt the second root of the equation
-    second_root = -2 * np.atan(
-        (term_one + uz + np.sqrt(term_two - term_three + ux**2 - term_four + term_five + term_six + term_seven + term_eight + uz**2))
-        / denominator
-    )
+    second_root = -2 * np.atan((term_one + uz + sqrt_term) / denominator)
     return second_root
-    # fmt: on
