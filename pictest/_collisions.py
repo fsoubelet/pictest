@@ -395,7 +395,3 @@ def nb_coulomb_collision_deltas(
     # Return the deltas, values already divided by two
     # (this is directly to be added to particle1, removed from particle2)
     return (deltap1cmx / 2, deltap1cmy / 2, deltap1cmz / 2)
-
-
-# ----- Private Helpers for Takizuka and Abe ----- #
-
