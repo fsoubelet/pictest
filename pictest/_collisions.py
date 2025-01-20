@@ -413,6 +413,9 @@ def _compute_phi(
     we will return the second root instead.
 
     See my solving notebook for the derivation of the formula.
+    The roots' analytical forms were determined with sympy and
+    the validity of the written solutions (decomposed assembled
+    terms) was verified just the same. 
 
     Parameters
     ----------
@@ -428,8 +431,75 @@ def _compute_phi(
     phi : float64
         The value of phi, the angle between ux and ut, in radians.
     """
+    # The two roots are the same with only a sign difference in the atan
     first_root = -2 * np.arctan((ux - np.sqrt(ux**2 + uy**2)) / uy)
     if first_root > 0:
         return first_root
     return -2 * np.arctan((ux + np.sqrt(ux**2 + uy**2)) / uy)
 
+
+@numba.jit
+def _compute_theta(
+    ux: numba.float64,  # type: ignore
+    uy: numba.float64,  # type: ignore
+    uz: numba.float64,  # type: ignore
+    phi: numba.float64,  # type: ignore
+) -> numba.float64:  # type: ignore
+    """
+    Solves the first system of Eq (2) in Takizuka and Abe to
+    determine the value of theta. An important consideration
+    is that theta - as an angle - has to be positive. We will
+    then try the first root of the equation and if it is not
+    positive we will return the second root instead.
+
+    It is assumed that phi has already been solved for with
+    the second system of Eq (2) in Takizuka and Abe, since
+    it is an input to this function.
+
+    See my solving notebook for the derivation of the formula.
+    The roots' analytical forms were determined with sympy and
+    the validity of the written solutions (decomposed assembled
+    terms) was verified just the same. 
+
+    Parameters
+    ----------
+    ux : float64
+        The horizontal velocity difference of the particles.
+    uy : float64
+        The vertical velocity difference of the particles.
+    uz : float64
+        The longitudinal velocity difference of the particles.
+    phi : float64
+        The angle between ux and ut, see figure
+    """
+    # ----------------------------------------------
+    # Define term used everywhere to avoid recomputing
+    tan_phi_2 = np.tan(phi / 2)  # compute only once
+    # ----------------------------------------------
+    # Define terms one by one first for clarity
+    term_one = uz * tan_phi_2**2
+    term_two = ux**2 * tan_phi_2**4
+    term_three = 2 * ux**2 * tan_phi_2**2
+    term_four = 4 * ux * uy * tan_phi_2**3
+    term_five = 4 * ux * uy * tan_phi_2
+    term_six = 4 * uy**2 * tan_phi_2**2
+    term_seven = uz**2 * tan_phi_2**4
+    term_eight = 2 * uz**2 * tan_phi_2**2
+    denominator = -ux * tan_phi_2**2 + ux + 2 * uy * tan_phi_2
+    # ----------------------------------------------
+    # Attempt the first root of the equation
+    # fmt: off
+    first_root = -2 * np.atan(
+        (term_one + uz - np.sqrt(term_two - term_three + ux**2 - term_four + term_five + term_six + term_seven + term_eight + uz**2))
+        / denominator
+    )
+    if first_root >= 0:
+        return first_root
+    # ----------------------------------------------
+    # Otherwise attempt the second root of the equation
+    second_root = -2 * np.atan(
+        (term_one + uz + np.sqrt(term_two - term_three + ux**2 - term_four + term_five + term_six + term_seven + term_eight + uz**2))
+        / denominator
+    )
+    return second_root
+    # fmt: on
