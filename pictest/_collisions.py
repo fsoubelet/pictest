@@ -15,6 +15,8 @@ from scipy.constants import c
 
 from pictest._cells import find_index_of_all_particles_in_given_cell
 
+# ----- Function to Collide a Pair ----- #
+
 
 def collide_particle_pair(
     idx1: int, idx2: int, toty: float, density: float, delta_t: float, particles: xt.Particles
@@ -71,6 +73,9 @@ def collide_particle_pair(
     particles.px[idx2] -= deltap1cmx
     particles.py[idx2] -= deltap1cmy
     particles.delta[idx2] -= deltap1cmz
+
+
+# ----- Functions to Scatter Entire Cells ----- #
 
 
 # This one does random pairs until MAX_COLLISIONS
