@@ -15,6 +15,7 @@ from scipy.constants import c
 
 from pictest._cells import find_index_of_all_particles_in_given_cell
 from pictest._sire import nb_sire_coulomb_collision_deltas
+from pictest._takizuka_abe import nb_takizuka_abe_collision_deltas
 
 # ----- Function to Collide a Pair ----- #
 
