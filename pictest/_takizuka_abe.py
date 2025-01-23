@@ -78,10 +78,11 @@ def nb_takizuka_abe_collision_deltas(
     uy = (py1 - py2) / mass_g  # uy = vy1 - vy2
     uz = (delta1 - delta2) / mass_g  # uz = vz1 - vz2
     # ----------------------------------------------
-    # Now we compute phi and theta from Eq. (2) system
+    # Now we compute phi, theta and then u from Eq. (2)
     # See relevant function docstrings for information
     phi = _compute_phi(ux, uy)
     theta = _compute_theta(ux, uy, uz, phi)
+    u = np.sin(theta) * np.cos(phi) * ux + np.sin(theta) * np.sin(phi) * uy + np.cos(theta) * uz
     # ----------------------------------------------
     # We draw the angle PHI from Eq. (3) (uniform dist [0-2pi])
     # and we determine THETA by dr
@@ -90,13 +91,15 @@ def nb_takizuka_abe_collision_deltas(
     # We draw a value for delta according to Eq (8a)
     # and then plug into Eq 
     delta = _draw_delta()  # TODO: implement this function
+    THETA = 2 * np.arctan(delta)
+    # ----------------------------------------------
+    # We compute U_T defined below Eq (4d)
+    # TODO
 
     # ----------------------------------------------
-    # We want to compute deltaux, deltauy, deltauz from Eq (4.a) of T&A
-    # We first need to compute U_T defined below Eq. (4d)
-    # U_T =
-    pass
-
+    # Now we compute deltaux, deltauy, deltauz from
+    # Eq (4.b), Eq (4.c) and Eq (4.d) respectively.
+    # TODO
 
 # ----- Private Helpers for Takizuka and Abe ----- #
 
@@ -237,7 +240,10 @@ def _draw_PHI() -> numba.float64:  # type: ignore
 
 def _draw_delta(
     q0: numba.float64,  # type: ignore
-    mass0: numba.float64,  # type: ignore
+    mass_g: numba.float64,  # type: ignore
+    coulog: numba.float64,  # type: ignore
+    delta_t: numba.float64,  # type: ignore
+    u: numba.float64,  # type: ignore
 ) -> numba.float64:  # type: ignore
     """
     Draws a random value for the variable delta, which is
@@ -250,16 +256,24 @@ def _draw_delta(
     q0 : float64
         The charge of the particles in the pair (same species),
         in [e].
-    mass0 : float64
+    mass_g : float64
         The mass of the particles in the pair (same species),
         in [g].
+    coulog : float64
+        The Coulomb logarithm for the whole bunch.
+    delta_t : float64
+        The time scale of the IBS interaction, in [s].
+    u : float64
+        The transverse velocity of the particles.
 
     Returns
     -------
     delta : float64
         A random number from the relevant distribution.
     """
+    # ----------------------------------------------
     # We compute the variance as described by Eq. (8a)
-    variance = 1  # TODO
+    #  
+    variance = delta_t * () / (8 * np.pi * epsilon_0**2)
     scale = np.std(variance)
     return np.random.normal(0, scale=scale)
