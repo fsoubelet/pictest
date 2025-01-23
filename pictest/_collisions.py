@@ -14,10 +14,12 @@ import xtrack as xt
 from scipy.constants import c
 
 from pictest._cells import find_index_of_all_particles_in_given_cell
+from pictest._sire import nb_sire_coulomb_collision_deltas
 
 # ----- Function to Collide a Pair ----- #
 
 
+# TODO: FOR NOW ONLY DOES SIRE TYPE, REWORK LATER TO GIVE CHOICE
 def collide_particle_pair(
     idx1: int, idx2: int, toty: float, density: float, delta_t: float, particles: xt.Particles
 ) -> None:
@@ -62,7 +64,7 @@ def collide_particle_pair(
     # Compute the momentum deltas (compiled code)
     # These are already divided by two so directly to apply!
     # This way more of the operations are done in compiled code
-    deltap1cmx, deltap1cmy, deltap1cmz = nb_coulomb_collision_deltas(
+    deltap1cmx, deltap1cmy, deltap1cmz = nb_sire_coulomb_collision_deltas(
         px1, px2, py1, py2, delta1, delta2, phi, toty, density, delta_t, beta0, gamma0, r0
     )
     # ----------------------------------------------
@@ -78,6 +80,7 @@ def collide_particle_pair(
 # ----- Functions to Scatter Entire Cells ----- #
 
 
+# TODO: THIS IS STILL QUITE SIRE SPECIFIC (toty, volume etc), REWORK LATER
 # This one does random pairs until MAX_COLLISIONS
 def scatter_cell_maxcol(
     cell_number: int,
@@ -137,12 +140,18 @@ def scatter_cell_maxcol(
         part1, part2 = random.sample(cell_particles, k=2)  # choose a pair
         # Apply a coulomb collision to this particle pair
         collide_particle_pair(
-            idx1=part1, idx2=part2, toty=toty, density=density, delta_t=delta_t, particles=particles
+            idx1=part1,
+            idx2=part2,
+            toty=toty,
+            density=density,
+            delta_t=delta_t,
+            particles=particles,
         )
         # That's one less collision to do
         n_collisions -= 1
 
 
+# TODO: THIS IS STILL QUITE SIRE SPECIFIC (toty, volume etc), REWORK LATER
 # This one does one collision per particle
 def scatter_cell_onecoll_perpart(
     cell_number: int,
