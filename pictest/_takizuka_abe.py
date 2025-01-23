@@ -25,6 +25,7 @@ def nb_takizuka_abe_collision_deltas(
     mass0: numba.float64,  # type: ignore
     coulog: numba.float64,  # type: ignore
     delta_t: numba.float64,  # type: ignore
+    n_l: numba.float64,  # type: ignore
 ) -> tuple[numba.float64, numba.float64, numba.float64]:  # type: ignore
     """
     Compute momentum deltas for a two-article Coulomb collision, trying to stay
@@ -60,6 +61,10 @@ def nb_takizuka_abe_collision_deltas(
         The Coulomb logarithm for the whole bunch.
     delta_t : float64
         The time interval for the IBS interaction, in [s].
+    n_l : float64
+        The lower density between n_alpha and n_beta. These
+        are defined in the "determination of pairs" paragraph.
+        Note that n_alpha = n_beta = n_l (only one species).
 
     Returns
     -------
@@ -90,7 +95,7 @@ def nb_takizuka_abe_collision_deltas(
     # ----------------------------------------------
     # We draw a value for delta according to Eq (8a)
     # and then plug into Eq
-    delta = _draw_delta()  # TODO: implement this function
+    delta = _draw_delta(q0, mass_g, coulog, delta_t, n_l, u)
     THETA = 2 * np.arctan(delta)
     # ----------------------------------------------
     # We compute U_T defined below Eq (4d)
@@ -244,7 +249,7 @@ def _draw_delta(
     mass_g: numba.float64,  # type: ignore
     coulog: numba.float64,  # type: ignore
     delta_t: numba.float64,  # type: ignore
-    cell_density: numba.float64,  # type: ignore
+    n_l: numba.float64,  # type: ignore
     u: numba.float64,  # type: ignore
 ) -> numba.float64:  # type: ignore
     """
@@ -265,9 +270,10 @@ def _draw_delta(
         The Coulomb logarithm for the whole bunch.
     delta_t : float64
         The time interval for the IBS interaction, in [s].
-    cell_density : float64
-        The local density of the grid cell in which
-        the particles belong.
+    n_l : float64
+        The lower density between n_alpha and n_beta. These
+        are defined in the "determination of pairs" paragraph.
+        Note that n_alpha = n_beta = n_l (only one species).
     u : float64
         The transverse velocity of the particles.
 
@@ -285,7 +291,7 @@ def _draw_delta(
     # Remember e_alpha = e_beta = q0 (only one species)
     variance = (
         delta_t
-        * (q0**4 * cell_density * coulog)
+        * (q0**4 * n_l * coulog)
         / (8 * np.pi * epsilon_0**2 * m_alpha_beta**2 * u**3)
     )
     # ----------------------------------------------
