@@ -38,8 +38,6 @@ def _compute_phi(
         The horizontal velocity difference of the particles.
     uy : float64
         The vertical velocity difference of the particles.
-    uz : float64
-        The longitudinal velocity difference of the particles.
 
     Returns
     -------
