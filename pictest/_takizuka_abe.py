@@ -134,3 +134,20 @@ def _compute_theta(
     # Otherwise attempt the second root of the equation
     second_root = -2 * np.atan((term_one + uz + sqrt_term) / denominator)
     return second_root
+
+
+@numba.jit
+def _draw_PHI() -> numba.float64:  # type: ignore
+    """
+    Draws a random value for the azimuthal angle PHI,
+    first seen in Eq (3) in Takizuka and Abe's paper
+    and described in the sentence just below.
+
+    Returns
+    -------
+    PHI : float64
+        A random number between 0 and 2pi.
+    """
+    return np.random.uniform(0, 2 * np.pi)
+
+
