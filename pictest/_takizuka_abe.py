@@ -59,7 +59,7 @@ def nb_takizuka_abe_collision_deltas(
     coulog : float64
         The Coulomb logarithm for the whole bunch.
     delta_t : float64
-        The time scale of the IBS interaction, in [s].
+        The time interval for the IBS interaction, in [s].
 
     Returns
     -------
@@ -73,7 +73,7 @@ def nb_takizuka_abe_collision_deltas(
     # We divide by mass because xtrack uses momentum
     _ev_to_J = 1.602176634 * 10**-19  # conversion factor from eV to J
     _eV_to_g = 1e3 * _ev_to_J / c**2  # conversion factor from eV to kg
-    mass_g = mass0 *_eV_to_g  # we want mass in [g]
+    mass_g = mass0 * _eV_to_g  # we want mass in [g]
     ux = (px1 - px2) / mass_g  # ux = vx1 - vx2
     uy = (py1 - py2) / mass_g  # uy = vy1 - vy2
     uz = (delta1 - delta2) / mass_g  # uz = vz1 - vz2
@@ -89,7 +89,7 @@ def nb_takizuka_abe_collision_deltas(
     PHI = _draw_PHI()
     # ----------------------------------------------
     # We draw a value for delta according to Eq (8a)
-    # and then plug into Eq 
+    # and then plug into Eq
     delta = _draw_delta()  # TODO: implement this function
     THETA = 2 * np.arctan(delta)
     # ----------------------------------------------
@@ -100,6 +100,7 @@ def nb_takizuka_abe_collision_deltas(
     # Now we compute deltaux, deltauy, deltauz from
     # Eq (4.b), Eq (4.c) and Eq (4.d) respectively.
     # TODO
+
 
 # ----- Private Helpers for Takizuka and Abe ----- #
 
@@ -243,6 +244,7 @@ def _draw_delta(
     mass_g: numba.float64,  # type: ignore
     coulog: numba.float64,  # type: ignore
     delta_t: numba.float64,  # type: ignore
+    cell_density: numba.float64,  # type: ignore
     u: numba.float64,  # type: ignore
 ) -> numba.float64:  # type: ignore
     """
@@ -262,7 +264,10 @@ def _draw_delta(
     coulog : float64
         The Coulomb logarithm for the whole bunch.
     delta_t : float64
-        The time scale of the IBS interaction, in [s].
+        The time interval for the IBS interaction, in [s].
+    cell_density : float64
+        The local density of the grid cell in which
+        the particles belong.
     u : float64
         The transverse velocity of the particles.
 
@@ -272,8 +277,18 @@ def _draw_delta(
         A random number from the relevant distribution.
     """
     # ----------------------------------------------
+    # We compute m_alpha_beta from Eq (6). Because we
+    # only have one species m_alpha = m_beta = mass_g
+    m_alpha_beta = mass_g ** 2 / (2 * mass_g)
+    # ----------------------------------------------
     # We compute the variance as described by Eq. (8a)
-    #  
-    variance = delta_t * () / (8 * np.pi * epsilon_0**2)
+    # Remember e_alpha = e_beta = q0 (only one species)
+    variance = (
+        delta_t
+        * (q0**4 * cell_density * coulog)
+        / (8 * np.pi * epsilon_0**2 * m_alpha_beta**2 * u**3)
+    )
+    # ----------------------------------------------
+    # From the variance we get stdev and draw delta
     scale = np.std(variance)
     return np.random.normal(0, scale=scale)
