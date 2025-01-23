@@ -11,6 +11,9 @@ import xtrack as xt
 
 from scipy.constants import c, epsilon_0
 
+# ----- Exposed Collision Deltas Function ----- #
+
+
 @numba.jit
 def nb_takizuka_abe_collision_deltas(
     px1: numba.float64,  # type: ignore
@@ -79,8 +82,6 @@ def nb_takizuka_abe_collision_deltas(
     # We first need to compute U_T defined below Eq. (4d)
     # U_T =
     pass
-
-
 
 
 # ----- Private Helpers for Takizuka and Abe ----- #
@@ -220,9 +221,7 @@ def _draw_PHI() -> numba.float64:  # type: ignore
     return np.random.uniform(0, 2 * np.pi)
 
 
-def _draw_delta(
-    
-) -> numba.float64:  # type: ignore
+def _draw_delta() -> numba.float64:  # type: ignore
     """
     Draws a random value for the variable delta, which is
     used to later determine the scattering angle THETA. Its
