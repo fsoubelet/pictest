@@ -19,7 +19,7 @@ from pictest._sire import nb_sire_coulomb_collision_deltas
 # ----- Function to Collide a Pair ----- #
 
 
-# TODO: FOR NOW ONLY DOES SIRE TYPE, REWORK LATER TO GIVE CHOICE
+# TODO: THIS IS STILL QUITE SIRE SPECIFIC (toty), REWORK LATER
 def collide_particle_pair(
     idx1: int, idx2: int, toty: float, density: float, delta_t: float, particles: xt.Particles
 ) -> None:
