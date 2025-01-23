@@ -20,7 +20,7 @@ from scipy.constants import c, epsilon_0
 
 
 @numba.jit
-def nb_coulomb_collision_deltas(
+def nb_sire_coulomb_collision_deltas(
     px1: numba.float64,  # type: ignore
     px2: numba.float64,  # type: ignore
     py1: numba.float64,  # type: ignore
