@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import numba
 import numpy as np
-import xtrack as xt
 
 from scipy.constants import c, epsilon_0
 
@@ -22,7 +21,10 @@ def nb_takizuka_abe_collision_deltas(
     py2: numba.float64,  # type: ignore
     delta1: numba.float64,  # type: ignore
     delta2: numba.float64,  # type: ignore
+    q0: numba.float64,  # type: ignore
     mass0: numba.float64,  # type: ignore
+    coulog: numba.float64,  # type: ignore
+    delta_t: numba.float64,  # type: ignore
 ) -> tuple[numba.float64, numba.float64, numba.float64]:  # type: ignore
     """
     Compute momentum deltas for a two-article Coulomb collision, trying to stay
@@ -48,6 +50,16 @@ def nb_takizuka_abe_collision_deltas(
         Momentum deviation of the first particle of the pair.
     delta2 : float64
         Momentum deviation of the second particle of the pair.
+    q0 : float64
+        The charge of the particles in the pair (same species),
+        in [e].
+    mass0 : float64
+        The mass of the particles in the pair (same species), in
+        [eV] as `xtrack` gives us.
+    coulog : float64
+        The Coulomb logarithm for the whole bunch.
+    delta_t : float64
+        The time scale of the IBS interaction, in [s].
 
     Returns
     -------
@@ -56,27 +68,29 @@ def nb_takizuka_abe_collision_deltas(
         and longitudinal momenta. These are already the
         amount to apply to particles.
     """
-    # TODO: for Eq. (8a) compute the Coulomb log for the whole bunch and THEN use that value for every cell
     # ----------------------------------------------
-    # Some variables definitions from T&A
-    ux = (
-        px1 - px2
-    ) / mass0  # from Eq. (1) ux = vx1 - vx2 = (px1 / m) - (px2 / m) = (px1 - px2) / m
-    uy = (
-        py1 - py2
-    ) / mass0  # from Eq. (1) uy = vy1 - vy2 = (py1 / m) - (py2 / m) = (py1 - py2) / m
-    uz = (
-        delta1 - delta2
-    ) / mass0  # from Eq. (1) un = vn1 - vn2 = (delta1 / m) - (delta2 / m) = (delta1 - delta2) / m
+    # First define the 'u' variables from Eq. (1)
+    # We divide by mass because xtrack uses momentum
+    _ev_to_J = 1.602176634 * 10**-19  # conversion factor from eV to J
+    _eV_to_g = 1e3 * _ev_to_J / c**2  # conversion factor from eV to kg
+    mass_g = mass0 *_eV_to_g  # we want mass in [g]
+    ux = (px1 - px2) / mass_g  # ux = vx1 - vx2
+    uy = (py1 - py2) / mass_g  # uy = vy1 - vy2
+    uz = (delta1 - delta2) / mass_g  # uz = vz1 - vz2
     # ----------------------------------------------
-    # THEN WE NEED TO SOLVE FOR THETA and PHI in Eq. (2)
-    # We know the following two relations
+    # Now we compute phi and theta from Eq. (2) system
+    # See relevant function docstrings for information
+    phi = _compute_phi(ux, uy)
+    theta = _compute_theta(ux, uy, uz, phi)
     # ----------------------------------------------
-    # NOW WE NEED TO DRAW A DELTA VARIABLE FROM A GAUSSIAN DISTRIBUTION
-    # with 0 mean and a variance according to Eq. (8a) (remember that
-    # alpha and beta species are the same species of particles here):
-    # variance = delta_t * (charge_alpha**2 * charge_beta**2 * n_l * coulog) / (8 * pi * epsilon_0**2 * m**2 * v**3)
-    # In determination of pairs we read
+    # We draw the angle PHI from Eq. (3) (uniform dist [0-2pi])
+    # and we determine THETA by dr
+    PHI = _draw_PHI()
+    # ----------------------------------------------
+    # We draw a value for delta according to Eq (8a)
+    # and then plug into Eq 
+    delta = _draw_delta()  # TODO: implement this function
+
     # ----------------------------------------------
     # We want to compute deltaux, deltauy, deltauz from Eq (4.a) of T&A
     # We first need to compute U_T defined below Eq. (4d)
@@ -221,18 +235,31 @@ def _draw_PHI() -> numba.float64:  # type: ignore
     return np.random.uniform(0, 2 * np.pi)
 
 
-def _draw_delta() -> numba.float64:  # type: ignore
+def _draw_delta(
+    q0: numba.float64,  # type: ignore
+    mass0: numba.float64,  # type: ignore
+) -> numba.float64:  # type: ignore
     """
     Draws a random value for the variable delta, which is
     used to later determine the scattering angle THETA. Its
     properties are described in Eq (8a) in Takizuka and Abe's
     paper.
 
+    Parameters
+    ----------
+    q0 : float64
+        The charge of the particles in the pair (same species),
+        in [e].
+    mass0 : float64
+        The mass of the particles in the pair (same species),
+        in [g].
+
     Returns
     -------
     delta : float64
         A random number from the relevant distribution.
     """
-    # We need to determine the value of the variance and then draw
-    VAR = 1  # TODO
-    return np.random.normal(0, VAR)
+    # We compute the variance as described by Eq. (8a)
+    variance = 1  # TODO
+    scale = np.std(variance)
+    return np.random.normal(0, scale=scale)
