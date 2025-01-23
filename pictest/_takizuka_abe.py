@@ -151,3 +151,20 @@ def _draw_PHI() -> numba.float64:  # type: ignore
     return np.random.uniform(0, 2 * np.pi)
 
 
+def _draw_delta(
+    
+) -> numba.float64:  # type: ignore
+    """
+    Draws a random value for the variable delta, which is
+    used to later determine the scattering angle THETA. Its
+    properties are described in Eq (8a) in Takizuka and Abe's
+    paper.
+
+    Returns
+    -------
+    delta : float64
+        A random number from the relevant distribution.
+    """
+    # We need to determine the value of the variance and then draw
+    VAR = 1  # TODO
+    return np.random.normal(0, VAR)
