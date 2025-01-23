@@ -7,7 +7,6 @@ from __future__ import annotations
 import itertools
 import random
 
-import numba
 import numpy as np
 import xtrack as xt
 
