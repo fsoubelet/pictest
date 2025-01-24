@@ -176,8 +176,16 @@ def nb_takizuka_abe_collision_deltas(
     # Now, if u_t != 0 we compute deltaux, deltauy and
     # deltauz from Eq (4.b), Eq (4.c) and Eq (4.d).
     if u_t != 0:
-        deltaux = ux * uz * np.sin(THETA) * np.cos(PHI) / u_t - uy * u * np.sin(THETA) * np.sin(PHI) / u_t  - ux * (1 - np.cos(THETA))
-        deltauy = uy * uz * np.sin(THETA) * np.cos(PHI) / u_t + ux * u * np.sin(THETA) * np.sin(PHI) / u_t  - uy * (1 - np.cos(THETA))
+        deltaux = (
+            ux * uz * np.sin(THETA) * np.cos(PHI) / u_t
+            - uy * u * np.sin(THETA) * np.sin(PHI) / u_t
+            - ux * (1 - np.cos(THETA))
+        )
+        deltauy = (
+            uy * uz * np.sin(THETA) * np.cos(PHI) / u_t
+            + ux * u * np.sin(THETA) * np.sin(PHI) / u_t
+            - uy * (1 - np.cos(THETA))
+        )
         deltauz = -1 * u_t * np.sin(THETA) * np.cos(PHI) - uz * (1 - np.cos(THETA))
     # ----------------------------------------------
     # Otherwise we compute them according to Eq (4b'),
