@@ -5,6 +5,9 @@ various parameters that appear in the collisions computations.
 
 from __future__ import annotations
 
+import itertools
+import random
+
 from typing import TYPE_CHECKING
 
 import numba
@@ -16,6 +19,47 @@ if TYPE_CHECKING:
     import xtrack as xt
 
 from scipy.constants import c
+
+# ----- Cell Scattering Functions ----- #
+
+
+def scatter_cell_maxcol_takizuka_abe(
+    cell_number: int,
+    attributions: np.ndarray,
+    volume: float,
+    delta_t: float,
+    particles: xt.Particles,
+    max_collisions: int,
+) -> None:
+    """
+    Considers a single cell of the meshgrid and applies collisions
+    to randomly chosen pairs of particles in the cell. Stops when
+    the maximum number of collisions has been reached.
+
+    This draws random pairs with replacement for each collision,
+    until we reach the max number of collisions to do in the cell.
+    """
+    pass
+
+
+def scatter_cell_onecollperpart_takizuka_abe(
+    cell_number: int,
+    attributions: np.ndarray,
+    volume: float,
+    delta_t: float,
+    particles: xt.Particles,
+    **kwargs,
+) -> None:
+    """
+    Considers a single cell of the meshgrid and applies collisions
+    to randomly chosen pairs of particles in the cell. Stops when
+    the maximum number of collisions has been reached.
+
+    This draws random pairs without replacement for each collision,
+    and does exactly one collision per particle.
+    """
+    pass
+
 
 # ----- Particle Pair Collision Function ----- #
 
