@@ -39,8 +39,8 @@ def scatter_cell_maxcol_sire(
     to randomly chosen pairs of particles in the cell. Stops when
     the maximum number of collisions has been reached.
 
-    THIS DRAWS RANDOM PAIRS WITH REPLACEMENT FOR EACH COLLISION,
-    UNTIL WE REACH THE MAX NUMBER OF COLLISIONS TO DO IN  THE CELL.
+    This draws random pairs with replacement for each collision,
+    until we reach the max number of collisions to do in the cell.
 
     Parameters
     ----------
@@ -108,8 +108,8 @@ def scatter_cell_onecollperpart_sire(
     to randomly chosen pairs of particles in the cell. Stops when
     the maximum number of collisions has been reached.
 
-    THIS DRAWS RANDOM PAIRS WITHOUT REPLACEMENT, AND
-    DOES 1 COLLISION PER PARTICLE.
+    This draws random pairs without replacement for each collision,
+    and does exactly one collision per particle.
 
     Parameters
     ----------
