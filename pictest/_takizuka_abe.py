@@ -173,9 +173,30 @@ def nb_takizuka_abe_collision_deltas(
     # We compute U_T defined below Eq (4d)
     u_t = np.sqrt(ux**2 + uy**2)
     # ----------------------------------------------
-    # Now we compute deltaux, deltauy, deltauz from
-    # Eq (4.b), Eq (4.c) and Eq (4.d) respectively.
+    # Now, if u_t != 0 we compute deltaux, deltauy and
+    # deltauz from Eq (4.b), Eq (4.c) and Eq (4.d).
+    if u_t != 0:
+        deltaux = ux * uz * np.sin(THETA) * np.cos(PHI) / u_t - uy * u * np.sin(THETA) * np.sin(PHI) / u_t  - ux * (1 - np.cos(THETA))
+        deltauy = uy * uz * np.sin(THETA) * np.cos(PHI) / u_t + ux * u * np.sin(THETA) * np.sin(PHI) / u_t  - uy * (1 - np.cos(THETA))
+        deltauz = -1 * u_t * np.sin(THETA) * np.cos(PHI) - uz * (1 - np.cos(THETA))
+    # ----------------------------------------------
+    # Otherwise we compute them according to Eq (4b'),
+    # Eq (4c') and Eq (4d')
+    else:
+        deltaux = u * np.sin(THETA) * np.cos(PHI)
+        deltauy = u * np.sin(THETA) * np.sin(PHI)
+        deltauz = u * (np.cos(THETA) - 1)
+    # ----------------------------------------------
+    # These are the deltas to apply to the velocities
+    # (see Eq (5a)) so we convert to the thetas to apply
+    # to the momenta which are used in Xsuite
     # TODO
+    res_deltaux = 1
+    res_deltauy = 1
+    res_deltauz = 1
+    # ----------------------------------------------
+    # And finally we can return the computed deltas
+    return res_deltaux, res_deltauy, res_deltauz
 
 
 # ----- Private Helpers for Takizuka and Abe ----- #
