@@ -24,11 +24,11 @@ from pictest._takizuka_abe import (
 if TYPE_CHECKING:
     from typing import Callable
 
-_METHOD_TO_SIRE_FUNC = {
+_METHOD_TO_SIRE_FUNC: dict[str, Callable] = {
     "maxcol": scatter_cell_maxcol_sire,
     "oneperpart": scatter_cell_oneperpart_sire,
 }
-_METHOD_TO_TAKIZUKA_ABE_FUNC = {
+_METHOD_TO_TAKIZUKA_ABE_FUNC: dict[str, Callable] = {
     "maxcol": scatter_cell_maxcol_takizuka_abe,
     "oneperpart": scatter_cell_oneperpart_takizuka_abe,
 }
