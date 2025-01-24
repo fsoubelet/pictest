@@ -42,7 +42,7 @@ def scatter_cell_maxcol_takizuka_abe(
     pass
 
 
-def scatter_cell_onecollperpart_takizuka_abe(
+def scatter_cell_oneperpart_takizuka_abe(
     cell_number: int,
     attributions: np.ndarray,
     volume: float,

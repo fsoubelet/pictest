@@ -94,7 +94,7 @@ def scatter_cell_maxcol_sire(
         n_collisions -= 1
 
 
-def scatter_cell_onecollperpart_sire(
+def scatter_cell_oneperpart_sire(
     cell_number: int,
     attributions: np.ndarray,
     toty: float,
