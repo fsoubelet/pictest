@@ -24,7 +24,17 @@ from pictest._takizuka_abe import (
 if TYPE_CHECKING:
     from typing import Callable
 
+_METHOD_TO_SIRE_FUNC = {
+    "maxcol": scatter_cell_maxcol_sire,
+    "oneperpart": scatter_cell_oneperpart_sire,
+}
+_METHOD_TO_TAKIZUKA_ABE_FUNC = {
+    "maxcol": scatter_cell_maxcol_takizuka_abe,
+    "oneperpart": scatter_cell_oneperpart_takizuka_abe,
+}
 
+
+# TODO: offer T&A or SIRE as a choice
 class IBSParticleInCell(IBSKick):
     r"""
     Beam element that applies IBS effects to particles in a PIC-like
@@ -110,6 +120,7 @@ class IBSParticleInCell(IBSKick):
         self._use_delta = kwargs.pop("use_delta", False)
         # ----------------------------------------------
         # Determine the cell scattering function based on the method
+        # TODO: based on approach set this to either T&A or SIRE vars
         _method_to_func = {
             "maxcol": scatter_cell_maxcol_sire,
             # "allpairs": scatter_cell_allpairs,
