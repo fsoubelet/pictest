@@ -22,7 +22,7 @@ from pictest._takizuka_abe import nb_takizuka_abe_collision_deltas
 
 # TODO: THIS IS STILL QUITE SIRE SPECIFIC (toty, volume etc), REWORK LATER
 # This one does random pairs until MAX_COLLISIONS
-def scatter_cell_maxcol(
+def scatter_cell_maxcol_sire(
     cell_number: int,
     attributions: np.ndarray,
     toty: float,
@@ -93,7 +93,7 @@ def scatter_cell_maxcol(
 
 # TODO: THIS IS STILL QUITE SIRE SPECIFIC (toty, volume etc), REWORK LATER
 # This one does one collision per particle
-def scatter_cell_onecoll_perpart(
+def scatter_cell_onecoll_perpart_sire(
     cell_number: int,
     attributions: np.ndarray,
     toty: float,
