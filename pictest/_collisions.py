@@ -13,68 +13,8 @@ import xtrack as xt
 from scipy.constants import c
 
 from pictest._cells import find_index_of_all_particles_in_given_cell
-from pictest._sire import nb_sire_coulomb_collision_deltas
+from pictest._sire import collide_particle_pair_sire
 from pictest._takizuka_abe import nb_takizuka_abe_collision_deltas
-
-# ----- Function to Collide a Pair ----- #
-
-
-# TODO: THIS IS STILL QUITE SIRE SPECIFIC (toty), REWORK LATER
-def collide_particle_pair(
-    idx1: int, idx2: int, toty: float, density: float, delta_t: float, particles: xt.Particles
-) -> None:
-    """
-    Apply the Coulomb scattering to particles denoted by 'idx1'
-    and 'idx2' in the provided `xtrack.Particles` object.
-
-    Parameters
-    ----------
-    idx1 : int
-        Index of the first particle of the pair.
-    idx2 : int
-        Index of the second particle of the pair.
-    toty : float
-        The total space in vertical. I have no idea
-        what this one is doing here. From SIRE.
-    density : float
-        The local density of the grid cell in which
-        the particles belong.
-    delta_t : float
-        The time step of the IBS effect application,
-        in [s]. Not sure exactly how this is determined.
-        In SIRE we give it as input.
-    particles : xt.Particles
-        The `xtrack.Particles` object with the particles
-        information, to be directly modified.
-    """
-    # ----------------------------------------------
-    # Get the context and some global properties
-    beta0 = particles.beta0[idx1]  # same for both
-    gamma0 = particles.gamma0[idx1]  # same for both
-    r0 = particles.get_classical_particle_radius0()
-    # ----------------------------------------------
-    # Get the particle properties needed for the collision
-    px1, px2 = particles.px[idx1], particles.px[idx2]
-    py1, py2 = particles.py[idx1], particles.py[idx2]
-    delta1, delta2 = particles.delta[idx1], particles.delta[idx2]
-    # ----------------------------------------------
-    # Determine the scattering angle, random uniform between 0 and 2pi
-    phi = 2 * np.pi * np.random.random()
-    # ----------------------------------------------
-    # Compute the momentum deltas (compiled code)
-    # These are already divided by two so directly to apply!
-    # This way more of the operations are done in compiled code
-    deltap1cmx, deltap1cmy, deltap1cmz = nb_sire_coulomb_collision_deltas(
-        px1, px2, py1, py2, delta1, delta2, phi, toty, density, delta_t, beta0, gamma0, r0
-    )
-    # ----------------------------------------------
-    # Apply the deltas to the particles (add to part1, remove from part2)
-    particles.px[idx1] += deltap1cmx
-    particles.py[idx1] += deltap1cmy
-    particles.delta[idx1] += deltap1cmz
-    particles.px[idx2] -= deltap1cmx
-    particles.py[idx2] -= deltap1cmy
-    particles.delta[idx2] -= deltap1cmz
 
 
 # ----- Functions to Scatter Entire Cells ----- #
@@ -139,7 +79,7 @@ def scatter_cell_maxcol(
     while n_collisions > 0:
         part1, part2 = random.sample(cell_particles, k=2)  # choose a pair
         # Apply a coulomb collision to this particle pair
-        collide_particle_pair(
+        collide_particle_pair_sire(
             idx1=part1,
             idx2=part2,
             toty=toty,
@@ -210,7 +150,7 @@ def scatter_cell_onecoll_perpart(
     # We collide for every single possible pair
     try:  # Apply a Coulomb collisions to particle pairs
         for part1, part2 in collided_pairs:
-            collide_particle_pair(
+            collide_particle_pair_sire(
                 idx1=part1,
                 idx2=part2,
                 toty=toty,
