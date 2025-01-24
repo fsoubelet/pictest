@@ -285,14 +285,12 @@ def _draw_delta(
     # ----------------------------------------------
     # We compute m_alpha_beta from Eq (6). Because we
     # only have one species m_alpha = m_beta = mass_g
-    m_alpha_beta = mass_g ** 2 / (2 * mass_g)
+    m_alpha_beta = mass_g**2 / (2 * mass_g)
     # ----------------------------------------------
     # We compute the variance as described by Eq. (8a)
     # Remember e_alpha = e_beta = q0 (only one species)
     variance = (
-        delta_t
-        * (q0**4 * n_l * coulog)
-        / (8 * np.pi * epsilon_0**2 * m_alpha_beta**2 * u**3)
+        delta_t * (q0**4 * n_l * coulog) / (8 * np.pi * epsilon_0**2 * m_alpha_beta**2 * u**3)
     )
     # ----------------------------------------------
     # From the variance we get stdev and draw delta
