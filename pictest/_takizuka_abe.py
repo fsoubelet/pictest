@@ -166,9 +166,9 @@ def nb_takizuka_abe_collision_deltas(
     PHI = _draw_PHI()
     # ----------------------------------------------
     # We draw a value for delta according to Eq (8a)
-    # and then plug into Eq
+    # and then plug into Eq (7a)
     delta = _draw_delta(q0, mass_g, coulog, delta_t, n_l, u)
-    THETA = 2 * np.arctan(delta)
+    THETA = np.arcsin(2 * delta / (1 + delta**2))
     # ----------------------------------------------
     # We compute U_T defined below Eq (4d)
     # TODO
@@ -357,7 +357,7 @@ def _draw_delta(
     # ----------------------------------------------
     # We compute m_alpha_beta from Eq (6). Because we
     # only have one species m_alpha = m_beta = mass_g
-    m_alpha_beta = mass_g**2 / (2 * mass_g)
+    m_alpha_beta = mass_g**2 / (2 * mass_g)  # that's mass_g / 2
     # ----------------------------------------------
     # We compute the variance as described by Eq. (8a)
     # Remember e_alpha = e_beta = q0 (only one species)
@@ -366,5 +366,5 @@ def _draw_delta(
     )
     # ----------------------------------------------
     # From the variance we get stdev and draw delta
-    scale = np.std(variance)
+    scale = np.std(variance)  # standard deviation
     return np.random.normal(0, scale=scale)
