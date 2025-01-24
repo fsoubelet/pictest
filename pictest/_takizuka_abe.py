@@ -173,38 +173,38 @@ def nb_takizuka_abe_collision_deltas(
     # We compute U_T defined below Eq (4d)
     u_t = np.sqrt(ux**2 + uy**2)
     # ----------------------------------------------
-    # Now, if u_t != 0 we compute deltaux, deltauy and
-    # deltauz from Eq (4.b), Eq (4.c) and Eq (4.d).
+    # Now, if u_t != 0 we compute delta_ux, delta_uy
+    # and delta_uz from Eq (4.b), Eq (4.c) & Eq (4.d)
     if u_t != 0:
-        deltaux = (
+        delta_ux = (
             ux * uz * np.sin(THETA) * np.cos(PHI) / u_t
             - uy * u * np.sin(THETA) * np.sin(PHI) / u_t
             - ux * (1 - np.cos(THETA))
         )
-        deltauy = (
+        delta_uy = (
             uy * uz * np.sin(THETA) * np.cos(PHI) / u_t
             + ux * u * np.sin(THETA) * np.sin(PHI) / u_t
             - uy * (1 - np.cos(THETA))
         )
-        deltauz = -1 * u_t * np.sin(THETA) * np.cos(PHI) - uz * (1 - np.cos(THETA))
+        delta_uz = -1 * u_t * np.sin(THETA) * np.cos(PHI) - uz * (1 - np.cos(THETA))
     # ----------------------------------------------
-    # Otherwise we compute them according to Eq (4b'),
-    # Eq (4c') and Eq (4d')
+    # Otherwise we compute to their alternative forms
+    # as in Eq (4b'), Eq (4c') and Eq (4d')
     else:
-        deltaux = u * np.sin(THETA) * np.cos(PHI)
-        deltauy = u * np.sin(THETA) * np.sin(PHI)
-        deltauz = u * (np.cos(THETA) - 1)
+        delta_ux = u * np.sin(THETA) * np.cos(PHI)
+        delta_uy = u * np.sin(THETA) * np.sin(PHI)
+        delta_uz = u * (np.cos(THETA) - 1)
     # ----------------------------------------------
     # These are the deltas to apply to the velocities
     # (see Eq (5a)) so we convert to the thetas to apply
     # to the momenta which are used in Xsuite
     # TODO
-    res_deltaux = 1
-    res_deltauy = 1
-    res_deltauz = 1
+    res_delta_ux = 1 * delta_ux
+    res_delta_uy = 1 * delta_uy
+    res_delta_uz = 1 * delta_uz
     # ----------------------------------------------
     # And finally we can return the computed deltas
-    return res_deltaux, res_deltauy, res_deltauz
+    return res_delta_ux, res_delta_uy, res_delta_uz
 
 
 # ----- Private Helpers for Takizuka and Abe ----- #
