@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 from scipy.constants import c
 
-# ----- Exposed Pair Collision Function ----- #
+# ----- Particle Pair Collision Function ----- #
 
 
 def collide_particle_pair_sire(
@@ -77,7 +77,7 @@ def collide_particle_pair_sire(
     particles.delta[idx2] -= deltap1cmz
 
 
-# ----- Exposed Collision Deltas Function ----- #
+# ----- Collision Deltas Function ----- #
 
 
 @numba.jit
@@ -194,6 +194,3 @@ def nb_sire_coulomb_collision_deltas(
     # Return the deltas, values already divided by two
     # (this is directly to be added to particle1, removed from particle2)
     return (deltap1cmx / 2, deltap1cmy / 2, deltap1cmz / 2)
-
-
-# ----- Private Helpers for SIRE ----- #

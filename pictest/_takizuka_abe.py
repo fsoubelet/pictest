@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 from scipy.constants import c
 
-# ----- Exposed Pair Collision Function ----- #
+# ----- Particle Pair Collision Function ----- #
 
 
 def collide_particle_pair_takizuka_abe(
@@ -82,7 +82,7 @@ def collide_particle_pair_takizuka_abe(
     particles.delta[idx2] -= deltap1cmz
 
 
-# ----- Exposed Collision Deltas Function ----- #
+# ----- Collision Deltas Function ----- #
 
 
 @numba.jit
