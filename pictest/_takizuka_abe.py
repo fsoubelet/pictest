@@ -171,8 +171,7 @@ def nb_takizuka_abe_collision_deltas(
     THETA = np.arcsin(2 * delta / (1 + delta**2))
     # ----------------------------------------------
     # We compute U_T defined below Eq (4d)
-    # TODO
-
+    u_t = np.sqrt(ux**2 + uy**2)
     # ----------------------------------------------
     # Now we compute deltaux, deltauy, deltauz from
     # Eq (4.b), Eq (4.c) and Eq (4.d) respectively.
