@@ -23,6 +23,7 @@ from scipy.constants import c
 # ----- Cell Scattering Functions ----- #
 
 
+# TODO: write
 def scatter_cell_maxcol_takizuka_abe(
     cell_number: int,
     attributions: np.ndarray,
@@ -42,6 +43,7 @@ def scatter_cell_maxcol_takizuka_abe(
     pass
 
 
+# TODO: write
 def scatter_cell_oneperpart_takizuka_abe(
     cell_number: int,
     attributions: np.ndarray,
