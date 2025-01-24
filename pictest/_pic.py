@@ -16,6 +16,10 @@ from xfields.ibs._kicks import IBSKick
 from pictest._cells import attribute_particle_cells
 from pictest._meshgrid import create_mesh, mesh_limits
 from pictest._sire import scatter_cell_maxcol_sire, scatter_cell_onecollperpart_sire
+from pictest._takizuka_abe import (
+    scatter_cell_maxcol_takizuka_abe,
+    scatter_cell_onecollperpart_takizuka_abe,
+)
 
 if TYPE_CHECKING:
     from typing import Callable
