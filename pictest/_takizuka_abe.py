@@ -66,8 +66,9 @@ def scatter_cell_oneperpart_takizuka_abe(
 # ----- Particle Pair Collision Function ----- #
 
 
+# TODO: ADAPT ONCE DELTAS FUNCTION IS DONE
 def collide_particle_pair_takizuka_abe(
-    idx1: int, idx2: int, density: float, delta_t: float, particles: xt.Particles
+    idx1: int, idx2: int, density: float, coulog: float, delta_t: float, particles: xt.Particles
 ) -> None:
     """
     Apply the Coulomb scattering to particles denoted by 'idx1'
@@ -85,6 +86,8 @@ def collide_particle_pair_takizuka_abe(
     density : float
         The local density of the grid cell in which
         the particles belong.
+    coulog : float64
+        The Coulomb logarithm for the whole bunch.
     delta_t : float
         The time step of the IBS effect application,
         in [s]. Not sure exactly how this is determined.
