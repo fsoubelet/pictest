@@ -154,7 +154,7 @@ class IBSParticleInCell(IBSKick):
         }
         cell_scatter_function = _method_to_func[self.method]
         # ----------------------------------------------
-        # We store everything
+        # We store everything that is relevant for later
         self.nx: int = nx
         self.ny: int = ny
         self.nz: int = nz
