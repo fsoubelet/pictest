@@ -75,7 +75,16 @@ class IBSParticleInCell(IBSKick):
 
     isthick = False
 
-    def __init__(self, nx: int, ny: int, nz: int, model: Literal["SIRE", "T&A"], cell_method: str, delta_t: float, **kwargs) -> None:
+    def __init__(
+        self,
+        nx: int,
+        ny: int,
+        nz: int,
+        model: Literal["SIRE", "T&A"],
+        cell_method: str,
+        delta_t: float,
+        **kwargs,
+    ) -> None:
         """
         Initialize the PIC element with necessary properties.
 
