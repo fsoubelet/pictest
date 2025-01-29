@@ -102,7 +102,7 @@ def install_ibs_pic(
                 nx=nx,
                 ny=ny,
                 nz=nz,
-                method=method,
+                cell_method=method,
                 delta_t=kdeltat if kdeltat is not None else deltat,
                 max_collisions=max_collisions,
             )

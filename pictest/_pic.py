@@ -22,7 +22,7 @@ from pictest._takizuka_abe import (
 )
 
 if TYPE_CHECKING:
-    from typing import Callable
+    from typing import Callable, Literal
 
 _METHOD_TO_SIRE_FUNC: dict[str, Callable] = {
     "maxcol": scatter_cell_maxcol_sire,
@@ -69,7 +69,7 @@ class IBSParticleInCell(IBSKick):
 
     isthick = False
 
-    def __init__(self, nx: int, ny: int, nz: int, method: str, delta_t: float, **kwargs) -> None:
+    def __init__(self, nx: int, ny: int, nz: int, model: Literal["SIRE", "T&A"], cell_method: str, delta_t: float, **kwargs) -> None:
         """
         Initialize the PIC element with necessary properties.
 
@@ -84,10 +84,18 @@ class IBSParticleInCell(IBSKick):
         nz : int
             Number of cells for the meshgrid, in the
             longitudinal coordinate.
-        method : str
+        model : str
+            Which collision model to use. Valid options are
+            as follows (case-insensitive):
+                - 'SIRE': an attempt to reproduce the SIRE
+                    model by A. Vivoli, which unfortunately
+                    was never documented.
+                - 'T&A': the Takizuka & Abe binary collision
+                    model from their paper of 1977.
+        cell_method : str
             The method to use to determine the random draw of
-            the collided particle pairs. Valid options are as
-            follows (case-insensitive):
+            the collided particle pairs in a cell. Valid options
+            are as follows (case-insensitive):
                 - 'maxcol': pairs are drawn randomly and collided
                     until a provided maximum number of collisions
                     has been performed. If chosen, one should provide
@@ -109,7 +117,7 @@ class IBSParticleInCell(IBSKick):
         """
         # ----------------------------------------------
         # Make sure we have a valid method, and max_collisions if relevant
-        self.method = method.lower()
+        self.method = cell_method.lower()
         if self.method not in ("maxcol", "allpairs", "oneperpart"):
             raise ValueError("Invalid parameter 'method'. See docstring.")
         max_collisions = kwargs.pop("max_collisions", None)
@@ -126,7 +134,7 @@ class IBSParticleInCell(IBSKick):
             # "allpairs": scatter_cell_allpairs,
             "oneperpart": scatter_cell_oneperpart_sire,
         }
-        cell_scatter_function = _method_to_func[method.lower()]
+        cell_scatter_function = _method_to_func[cell_method.lower()]
         # ----------------------------------------------
         # We store everything
         self.nx: int = nx
