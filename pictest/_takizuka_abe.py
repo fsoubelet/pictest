@@ -22,7 +22,9 @@ if TYPE_CHECKING:
 # ----- Cell Scattering Functions ----- #
 
 
-# TODO: write
+# TODO: write. Needs Coulog from IBS PIC class to be passed
+# and has to determine and pass n_l to the collision function.
+# Otherwise should be similar to the SIRE version.
 def scatter_cell_maxcol_takizuka_abe(
     cell_number: int,
     attributions: np.ndarray,
@@ -42,7 +44,9 @@ def scatter_cell_maxcol_takizuka_abe(
     pass
 
 
-# TODO: write
+# TODO: write. Needs Coulog from IBS PIC class to be passed
+# and has to determine and pass n_l to the collision function.
+# Otherwise should be similar to the SIRE version.
 def scatter_cell_oneperpart_takizuka_abe(
     cell_number: int,
     attributions: np.ndarray,
@@ -53,8 +57,7 @@ def scatter_cell_oneperpart_takizuka_abe(
 ) -> None:
     """
     Considers a single cell of the meshgrid and applies collisions
-    to randomly chosen pairs of particles in the cell. Stops when
-    the maximum number of collisions has been reached.
+    to randomly chosen pairs of particles in the cell.
 
     This draws random pairs without replacement for each collision,
     and does exactly one collision per particle.
