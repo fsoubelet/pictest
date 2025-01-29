@@ -59,6 +59,12 @@ class IBSParticleInCell(IBSKick):
         The time step of the IBS effect application,
         in [s]. Obtained from the distance from the
         previous and the particles' velocity (L / v).
+    model : str
+        Which collision model is used to determine the
+        scattering of the particles.
+    method : str
+        The method used to determine the random draw of
+        the collided particle pairs in a cell.
     max_collisions : int | None
         The max number of collisions to perform per cell.
         Will be `None` unless the chosen method needs it.
@@ -117,8 +123,11 @@ class IBSParticleInCell(IBSKick):
         """
         # ----------------------------------------------
         # Make sure we have a valid method, and max_collisions if relevant
+        self.model = model.lower()
         self.method = cell_method.lower()
-        if self.method not in ("maxcol", "allpairs", "oneperpart"):
+        if self.model not in ("sire", "t&a"):
+            raise ValueError("Invalid parameter 'model'. See docstring.")
+        if self.method not in ("maxcol", "oneperpart"):
             raise ValueError("Invalid parameter 'method'. See docstring.")
         max_collisions = kwargs.pop("max_collisions", None)
         if self.method == "maxcol" and max_collisions is None:
@@ -134,7 +143,7 @@ class IBSParticleInCell(IBSKick):
             # "allpairs": scatter_cell_allpairs,
             "oneperpart": scatter_cell_oneperpart_sire,
         }
-        cell_scatter_function = _method_to_func[cell_method.lower()]
+        cell_scatter_function = _method_to_func[self.method]
         # ----------------------------------------------
         # We store everything
         self.nx: int = nx
