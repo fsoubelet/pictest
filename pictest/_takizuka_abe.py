@@ -204,6 +204,10 @@ def nb_takizuka_abe_collision_deltas(
     uy = (py1 - py2) / mass_g  # uy = vy1 - vy2
     uz = (delta1 - delta2) / mass_g  # uz = vz1 - vz2
     # ----------------------------------------------
+    # We compute m_alpha_beta from Eq (6). We only have
+    # one species so m_alpha = m_beta = mass_g
+    m_alpha_beta = mass_g / 2  # simplyfied mass_g**2 / (2 * mass_g)
+    # ----------------------------------------------
     # Now we compute phi, theta and then u from Eq. (2)
     # See relevant function docstrings for information
     phi = _compute_phi(ux, uy)
@@ -216,7 +220,7 @@ def nb_takizuka_abe_collision_deltas(
     # ----------------------------------------------
     # We draw a value for delta according to Eq (8a)
     # and then plug into Eq (7a)
-    delta = _draw_delta(q0, mass_g, coulog, delta_t, n_l, u)
+    delta = _draw_delta(q0, m_alpha_beta, coulog, delta_t, n_l, u)
     THETA = np.arcsin(2 * delta / (1 + delta**2))
     # ----------------------------------------------
     # We compute U_T defined below Eq (4d)
@@ -244,16 +248,15 @@ def nb_takizuka_abe_collision_deltas(
         delta_uy = u * np.sin(THETA) * np.sin(PHI)
         delta_uz = u * (np.cos(THETA) - 1)
     # ----------------------------------------------
-    # These are the deltas to apply to the velocities
-    # (see Eq (5a)) so we convert to the thetas to apply
-    # to the momenta which are used in Xsuite
-    # TODO
-    res_delta_ux = 1 * delta_ux
-    res_delta_uy = 1 * delta_uy
-    res_delta_uz = 1 * delta_uz
+    # These are deltas to apply to velocities (see Eq (5a))
+    # so we convert to deltas to apply to momenta (used in
+    # Xsuite). See notebook to figure out the form.
+    res_delta_px = m_alpha_beta * delta_ux
+    res_delta_py = m_alpha_beta * delta_uy
+    res_delta_pz = m_alpha_beta * delta_uz
     # ----------------------------------------------
-    # And finally we can return the computed deltas
-    return res_delta_ux, res_delta_uy, res_delta_uz
+    # And finally we can return the computed momentum deltas
+    return res_delta_px, res_delta_py, res_delta_pz
 
 
 # ----- Private Helpers for Takizuka and Abe ----- #
@@ -395,7 +398,7 @@ def _draw_PHI() -> numba.float64:  # type: ignore
 
 def _draw_delta(
     q0: numba.float64,  # type: ignore
-    mass_g: numba.float64,  # type: ignore
+    m_alpha_beta: numba.float64,  # type: ignore
     coulog: numba.float64,  # type: ignore
     delta_t: numba.float64,  # type: ignore
     n_l: numba.float64,  # type: ignore
@@ -412,9 +415,10 @@ def _draw_delta(
     q0 : float64
         The charge of the particles in the pair (same species),
         in [e].
-    mass_g : float64
-        The mass of the particles in the pair (same species),
-        in [g].
+    m_alpha_beta : float64
+        The m_alpha_beta term of Eq (6) for the pair of
+        collided particles. In our case of same-species
+        this resolves to mass_g / 2. Units [-].
     coulog : float64
         The Coulomb logarithm for the whole bunch.
     delta_t : float64
@@ -432,14 +436,10 @@ def _draw_delta(
         A random number from the relevant distribution.
     """
     # ----------------------------------------------
-    # We compute m_alpha_beta from Eq (6). Because we
-    # only have one species m_alpha = m_beta = mass_g
-    m_alpha_beta = mass_g**2 / (2 * mass_g)  # that's mass_g / 2
-    # ----------------------------------------------
     # We compute the variance as described by Eq. (8a)
     # Remember e_alpha = e_beta = q0 (only one species)
-    variance = (
-        delta_t * (q0**4 * n_l * coulog) / (8 * np.pi * epsilon_0**2 * m_alpha_beta**2 * u**3)
+    variance = (delta_t * (q0**4 * n_l * coulog)) / (
+        8 * np.pi * epsilon_0**2 * m_alpha_beta**2 * u**3
     )
     # ----------------------------------------------
     # From the variance we get stdev and draw delta
