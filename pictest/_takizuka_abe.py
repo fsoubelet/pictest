@@ -214,12 +214,12 @@ def nb_takizuka_abe_collision_deltas(
     theta = _compute_theta(ux, uy, uz, phi)
     u = np.sin(theta) * np.cos(phi) * ux + np.sin(theta) * np.sin(phi) * uy + np.cos(theta) * uz
     # ----------------------------------------------
-    # We draw the angle PHI from Eq. (3) (uniform dist [0-2pi])
-    # and we determine THETA by dr
+    # We draw the polar collision angle PHI from Eq (3)
+    # (from a uniform distribution between 0 and 2pi)
     PHI = _draw_PHI()
     # ----------------------------------------------
     # We draw a value for delta according to Eq (8a)
-    # and then plug into Eq (7a)
+    # and then plug its value into Eq (7a) for THETA
     delta = _draw_delta(q0, m_alpha_beta, coulog, delta_t, n_l, u)
     THETA = np.arcsin(2 * delta / (1 + delta**2))
     # ----------------------------------------------
