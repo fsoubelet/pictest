@@ -65,9 +65,8 @@ def scatter_cell_oneperpart_takizuka_abe(
 # ----- Particle Pair Collision Function ----- #
 
 
-# TODO: ADAPT ONCE DELTAS FUNCTION IS DONE
 def collide_particle_pair_takizuka_abe(
-    idx1: int, idx2: int, density: float, coulog: float, delta_t: float, particles: xt.Particles
+    idx1: int, idx2: int, coulog: float, delta_t: float, n_l: float, particles: xt.Particles
 ) -> None:
     """
     Apply the Coulomb scattering to particles denoted by 'idx1'
@@ -79,18 +78,15 @@ def collide_particle_pair_takizuka_abe(
         Index of the first particle of the pair.
     idx2 : int
         Index of the second particle of the pair.
-    toty : float
-        The total space in vertical. I have no idea
-        what this one is doing here. From SIRE.
-    density : float
-        The local density of the grid cell in which
-        the particles belong.
     coulog : float64
         The Coulomb logarithm for the whole bunch.
     delta_t : float
-        The time step of the IBS effect application,
-        in [s]. Not sure exactly how this is determined.
-        In SIRE we give it as input.
+        The time step of the IBS interaction, in [s].
+    n_l : float64
+        The lower density between n_alpha and n_beta.
+        These are defined in the "determination of pairs"
+        paragraph. Note that n_alpha = n_beta = n_l (only
+        have one species of particles).
     particles : xt.Particles
         The `xtrack.Particles` object with the particles
         information, to be directly modified.
@@ -99,9 +95,6 @@ def collide_particle_pair_takizuka_abe(
     # Get some global properties - nly have one particle
     # species so we take properties of the first particle
     mass0 = particles.mass0[idx1]  # same for both
-    beta0 = particles.beta0[idx1]  # same for both
-    gamma0 = particles.gamma0[idx1]  # same for both
-    r0 = particles.get_classical_particle_radius0()
     q0 = particles.q0[idx1]  # same for both
     # ----------------------------------------------
     # Get the particle properties needed for the collision
@@ -109,25 +102,18 @@ def collide_particle_pair_takizuka_abe(
     py1, py2 = particles.py[idx1], particles.py[idx2]
     delta1, delta2 = particles.delta[idx1], particles.delta[idx2]
     # ----------------------------------------------
-    # TODO: we need to compute or pass (add parameter)
-    # the Coulomb (bunch) logarithm and n_l. Should come from above
-    # ----------------------------------------------
     # Compute the momentum deltas (compiled code)
-    # These are already divided by two so directly to apply!
-    # This way more of the operations are done in compiled code
-    # TODO: adapt this call
-    deltap1cmx, deltap1cmy, deltap1cmz = nb_takizuka_abe_collision_deltas(
+    delta_px, delta_py, delta_pz = nb_takizuka_abe_collision_deltas(
         px1, px2, py1, py2, delta1, delta2, q0, mass0, coulog, delta_t, n_l
     )
     # ----------------------------------------------
     # Apply the deltas to the particles (add to part1, remove from part2)
-    # TODO: in T&A do we get the value to apply or twice that?
-    particles.px[idx1] += deltap1cmx
-    particles.py[idx1] += deltap1cmy
-    particles.delta[idx1] += deltap1cmz
-    particles.px[idx2] -= deltap1cmx
-    particles.py[idx2] -= deltap1cmy
-    particles.delta[idx2] -= deltap1cmz
+    particles.px[idx1] += delta_px
+    particles.py[idx1] += delta_py
+    particles.delta[idx1] += delta_pz
+    particles.px[idx2] -= delta_px
+    particles.py[idx2] -= delta_py
+    particles.delta[idx2] -= delta_pz
 
 
 # ----- Collision Deltas Function ----- #
@@ -205,7 +191,7 @@ def nb_takizuka_abe_collision_deltas(
     # ----------------------------------------------
     # We compute m_alpha_beta from Eq (6). We only have
     # one species so m_alpha = m_beta = mass_g
-    m_alpha_beta = mass_g / 2  # simplyfied mass_g**2 / (2 * mass_g)
+    m_alpha_beta = mass_g / 2  # simplified mass_g**2 / (2 * mass_g)
     # ----------------------------------------------
     # Now we compute phi, theta and then u from Eq. (2)
     # See relevant function docstrings for information
