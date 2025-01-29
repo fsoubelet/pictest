@@ -18,7 +18,6 @@ from scipy.constants import c, epsilon_0
 if TYPE_CHECKING:
     import xtrack as xt
 
-from scipy.constants import c
 
 # ----- Cell Scattering Functions ----- #
 
