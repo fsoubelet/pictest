@@ -67,7 +67,7 @@ def scatter_cell_maxcol_sire(
     # Get some cell-specific parameters we will need
     cell_particles = find_index_of_all_particles_in_given_cell(cell_number, attributions)
     n_macroparts: int = cell_particles.size  # number of parts in this cell
-    cell_particles = list(cell_particles)  # need as list for sampling
+    cell_particles = list(cell_particles)  # INDICES - need as list for sampling
     # ----------------------------------------------
     # Determine the number of collisions to do in this cell. If there are more
     # max collisions than particles, we do 1 less than particles (if there are 2
@@ -136,8 +136,8 @@ def scatter_cell_oneperpart_sire(
     # ----------------------------------------------
     # Get some cell-specific parameters we will need
     cell_particles = find_index_of_all_particles_in_given_cell(cell_number, attributions)
-    num_parts: int = cell_particles.size  # number of parts in this cell
-    cell_particles = list(cell_particles)  # need as list for sampling
+    n_macroparts: int = cell_particles.size  # number of parts in this cell
+    cell_particles = list(cell_particles)  # INDICES - need as list for sampling
     random.shuffle(cell_particles)  # for randomness
     # ----------------------------------------------
     # Determine an ensemble of pairs, for 1 collision per particle
@@ -146,7 +146,7 @@ def scatter_cell_oneperpart_sire(
     n_collisions = len(collided_pairs)
     if n_collisions == 0:  # don't waste time and risk 0-division error
         return
-    density: float = num_parts / volume / n_collisions  # computed like SIRE
+    density: float = n_macroparts / volume / n_collisions  # computed like SIRE
     # ----------------------------------------------
     # We collide for every single possible pair
     try:  # Apply a Coulomb collisions to particle pairs
