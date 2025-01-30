@@ -15,6 +15,8 @@ import numpy as np
 
 from scipy.constants import c, epsilon_0
 
+from pictest._cells import find_index_of_all_particles_in_given_cell
+
 if TYPE_CHECKING:
     import xtrack as xt
 
@@ -22,16 +24,14 @@ if TYPE_CHECKING:
 # ----- Cell Scattering Functions ----- #
 
 
-# TODO: write. Needs Coulog from IBS PIC class to be passed
-# and has to determine and pass n_l to the collision function.
-# Otherwise should be similar to the SIRE version.
 def scatter_cell_maxcol_takizuka_abe(
     cell_number: int,
     attributions: np.ndarray,
     volume: float,
+    coulog: float,
     delta_t: float,
-    particles: xt.Particles,
     max_collisions: int,
+    particles: xt.Particles,
 ) -> None:
     """
     Considers a single cell of the meshgrid and applies collisions
@@ -40,8 +40,62 @@ def scatter_cell_maxcol_takizuka_abe(
 
     This draws random pairs with replacement for each collision,
     until we reach the max number of collisions to do in the cell.
+
+    Parameters
+    ----------
+    cell_number : int
+        The identifier of the cell to consider.
+    attributions : np.ndarray
+        The array of cell attributions for each particle, as given
+        by the `attribute_particle_cells_like_sire` function.
+    volume : float
+        The volume of the cell to consider, in [m^3]. All cells
+        have the same volume as the meshgrid is uniform.
+    coulog : float
+        The Coulomb logarithm for the whole bunch.
+    delta_t : float
+        The time step of the IBS effect application, in [s].
+        Should depend on the element length and the particle
+        velocity.
+    max_collisions : int
+        The maximum number of collisions to apply in the cell.
+    particles : xtrack.Particles
+        The particles distribution object to consider and act on.
     """
-    pass
+    # ----------------------------------------------
+    # Get some cell-specific parameters we will need
+    cell_particles = find_index_of_all_particles_in_given_cell(cell_number, attributions)
+    n_macroparts: int = cell_particles.size  # number of parts in this cell
+    cell_particles = list(cell_particles)  # INDICES - need as list for sampling
+    # ----------------------------------------------
+    # Determine the number of collisions to do in this cell. If there are more
+    # max collisions than particles, we do 1 less than particles (if there are 2
+    # parts, there will be 1 collision), otherwise we do the user-provided max
+    n_collisions = n_macroparts - 1 if max_collisions >= n_macroparts else max_collisions
+    if n_collisions == 0:  # don't waste time and risk 0-division error
+        return
+    # ----------------------------------------------
+    # We determine the n_l parameter for the collision function
+    # which is define in the "Determination of pairs" paragraph
+    weight = particles.weight[0]  # same for all, accounts for real part / macropart
+    Ni = n_macroparts * weight  # only one species, Ni = Ne
+    N0 = np.sum(particles.state > 0) * weight  # all alive parts, "particle number in a cloud"
+    V0 = volume  # happens to be the same for all cells
+    n_l = Ni * N0 / V0  # since Ni = Ne
+    # ----------------------------------------------
+    # Now we collide as long as we have to
+    while n_collisions > 0:
+        part1, part2 = random.sample(cell_particles, k=2)  # choose a pair
+        collide_particle_pair_takizuka_abe(
+            idx1=part1,
+            idx2=part2,
+            coulog=coulog,
+            delta_t=delta_t,
+            n_l=n_l,
+            particles=particles,
+        )
+        # That's one less collision to do
+        n_collisions -= 1
 
 
 # TODO: write. Needs Coulog from IBS PIC class to be passed
@@ -69,7 +123,7 @@ def scatter_cell_oneperpart_takizuka_abe(
 
 
 def collide_particle_pair_takizuka_abe(
-    idx1: int, idx2: int, coulog: float, delta_t: float, n_l: float, particles: xt.Particles
+    idx1: int, idx2: int, coulog: float, n_l: float, delta_t: float, particles: xt.Particles
 ) -> None:
     """
     Apply the Coulomb scattering to particles denoted by 'idx1'
@@ -83,13 +137,13 @@ def collide_particle_pair_takizuka_abe(
         Index of the second particle of the pair.
     coulog : float64
         The Coulomb logarithm for the whole bunch.
-    delta_t : float
-        The time step of the IBS interaction, in [s].
     n_l : float64
         The lower density between n_alpha and n_beta.
         These are defined in the "determination of pairs"
         paragraph. Note that n_alpha = n_beta = n_l (only
         have one species of particles).
+    delta_t : float
+        The time step of the IBS interaction, in [s].
     particles : xt.Particles
         The `xtrack.Particles` object with the particles
         information, to be directly modified.
@@ -384,6 +438,7 @@ def _draw_PHI() -> numba.float64:  # type: ignore
     return np.random.uniform(0, 2 * np.pi)
 
 
+@numba.jit
 def _draw_delta(
     q0: numba.float64,  # type: ignore
     m_alpha_beta: numba.float64,  # type: ignore
