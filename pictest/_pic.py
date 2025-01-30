@@ -34,7 +34,6 @@ _METHOD_TO_TAKIZUKA_ABE_FUNC: dict[str, Callable] = {
 }
 
 
-# TODO: offer T&A or SIRE as a choice
 class IBSParticleInCell(IBSKick):
     r"""
     Beam element that applies IBS effects to particles in a PIC-like
@@ -160,6 +159,7 @@ class IBSParticleInCell(IBSKick):
         self.nz: int = nz
         self.delta_t: float = delta_t
         self.max_collisions: int = max_collisions
+        # TODO: this will have to adapt to the chosen model
         self.scatter_cell: Callable = partial(cell_scatter_function, max_collisions=max_collisions)
 
     def __repr__(self) -> str:
