@@ -104,7 +104,6 @@ def scatter_cell_oneperpart_takizuka_abe(
     volume: float,
     coulog: float,
     delta_t: float,
-    max_collisions: int,
     particles: xt.Particles,
     **kwargs,
 ) -> None:
@@ -131,10 +130,11 @@ def scatter_cell_oneperpart_takizuka_abe(
         The time step of the IBS effect application, in [s].
         Should depend on the element length and the particle
         velocity.
-    max_collisions : int
-        The maximum number of collisions to apply in the cell.
     particles : xtrack.Particles
         The particles distribution object to consider and act on.
+    kwargs : dict
+        Not used, this is merely so the function does
+        not crash if given 'max_collisions'.
     """
     # ----------------------------------------------
     # Get some cell-specific parameters we will need
