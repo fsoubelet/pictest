@@ -98,14 +98,13 @@ def scatter_cell_maxcol_takizuka_abe(
         n_collisions -= 1
 
 
-# TODO: write. Needs Coulog from IBS PIC class to be passed
-# and has to determine and pass n_l to the collision function.
-# Otherwise should be similar to the SIRE version.
 def scatter_cell_oneperpart_takizuka_abe(
     cell_number: int,
     attributions: np.ndarray,
     volume: float,
+    coulog: float,
     delta_t: float,
+    max_collisions: int,
     particles: xt.Particles,
     **kwargs,
 ) -> None:
@@ -115,8 +114,63 @@ def scatter_cell_oneperpart_takizuka_abe(
 
     This draws random pairs without replacement for each collision,
     and does exactly one collision per particle.
+
+    Parameters
+    ----------
+    cell_number : int
+        The identifier of the cell to consider.
+    attributions : np.ndarray
+        The array of cell attributions for each particle, as given
+        by the `attribute_particle_cells_like_sire` function.
+    volume : float
+        The volume of the cell to consider, in [m^3]. All cells
+        have the same volume as the meshgrid is uniform.
+    coulog : float
+        The Coulomb logarithm for the whole bunch.
+    delta_t : float
+        The time step of the IBS effect application, in [s].
+        Should depend on the element length and the particle
+        velocity.
+    max_collisions : int
+        The maximum number of collisions to apply in the cell.
+    particles : xtrack.Particles
+        The particles distribution object to consider and act on.
     """
-    pass
+    # ----------------------------------------------
+    # Get some cell-specific parameters we will need
+    cell_particles = find_index_of_all_particles_in_given_cell(cell_number, attributions)
+    n_macroparts: int = cell_particles.size  # number of parts in this cell
+    cell_particles = list(cell_particles)  # INDICES - need as list for sampling
+    random.shuffle(cell_particles)  # for randomness
+    # ----------------------------------------------
+    # Determine an ensemble of pairs, for 1 collision per particle
+    # We just batch 2 by 2 since we shuffled (for randomness) above
+    collided_pairs = list(itertools.batched(cell_particles, 2))
+    n_collisions = len(collided_pairs)
+    if n_collisions == 0:  # don't waste time and risk 0-division error
+        return
+    # ----------------------------------------------
+    # We determine the n_l parameter for the collision function
+    # which is define in the "Determination of pairs" paragraph
+    weight = particles.weight[0]  # same for all, accounts for real part / macropart
+    Ni = n_macroparts * weight  # only one species, Ni = Ne
+    N0 = np.sum(particles.state > 0) * weight  # all alive parts, "particle number in a cloud"
+    V0 = volume  # happens to be the same for all cells
+    n_l = Ni * N0 / V0  # since Ni = Ne
+    # ----------------------------------------------
+    # Now we collide for every single possible pair
+    try:
+        for part1, part2 in collided_pairs:
+            collide_particle_pair_takizuka_abe(
+                idx1=part1,
+                idx2=part2,
+                coulog=coulog,
+                delta_t=delta_t,
+                n_l=n_l,
+                particles=particles,
+            )
+    except ValueError:  # happens for an odd number of particles (last pair has no 'part2')
+        pass
 
 
 # ----- Particle Pair Collision Function ----- #
