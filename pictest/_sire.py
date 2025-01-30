@@ -66,17 +66,17 @@ def scatter_cell_maxcol_sire(
     # ----------------------------------------------
     # Get some cell-specific parameters we will need
     cell_particles = find_index_of_all_particles_in_given_cell(cell_number, attributions)
-    num_parts: int = cell_particles.size  # number of parts in this cell
+    n_macroparts: int = cell_particles.size  # number of parts in this cell
     cell_particles = list(cell_particles)  # need as list for sampling
     # ----------------------------------------------
     # Determine the number of collisions to do in this cell. If there are more
     # max collisions than particles, we do 1 less than particles (if there are 2
     # parts, there will be 1 collision), otherwise we do the user-provided max
-    n_collisions = num_parts - 1 if max_collisions >= num_parts else max_collisions
+    n_collisions = n_macroparts - 1 if max_collisions >= n_macroparts else max_collisions
     if n_collisions == 0:  # don't waste time and risk 0-division error
         return
     weight = particles.weight[0]  # same for all, accounts for real part per macroparticle
-    density: float = num_parts * weight / volume / n_collisions  # computed like SIRE
+    density: float = n_macroparts * weight / volume / n_collisions  # computed like SIRE
     # ----------------------------------------------
     # We collide for a long as we have to
     while n_collisions > 0:
