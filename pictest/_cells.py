@@ -68,7 +68,7 @@ def nb_attribute_cells(
     attributions: numba.float64[:],  # type: ignore
     x: numba.float64[:],  # type: ignore
     y: numba.float64[:],  # type: ignore
-    zeta: numba.float64[:],  # type: ignore # SIRE uses deltasp (so delta for xtrack?) in longitudinal
+    zeta: numba.float64[:],  # type: ignore
     minx: numba.float64,  # type: ignore
     miny: numba.float64,  # type: ignore
     minz: numba.float64,  # type: ignore
@@ -118,15 +118,17 @@ def nb_attribute_cells(
     ncellsz : int64
         The number of cells in zeta of the meshgrid.
     """
+    # This is the SIRE-like way. Notice that we add ints so we
+    # might get the same cell (int) for particles that are far
+    # away because for instance (4 + 2 + 6) = (8 + 2 + 0) = 10
+    # fmt: off
     for part_index in numba.prange(x.size):
         attributions[part_index] = (
-            int(np.floor((x[part_index] - minx) / deltax))
-            * ncellsx  # integer of the cell in horitontal
-            + int(np.floor((y[part_index] - miny) / deltay))
-            * ncellsy  # integer of the cell in vertical
-            + int(np.floor((zeta[part_index] - minz) / deltaz))
-            * ncellsz  # integer of the cell in longitudinal
+            int(np.floor((x[part_index] - minx) / deltax)) * ncellsx  # integer of the cell in horitontal
+            + int(np.floor((y[part_index] - miny) / deltay)) * ncellsy  # integer of the cell in vertical
+            + int(np.floor((zeta[part_index] - minz) / deltaz)) * ncellsz  # integer of the cell in longitudinal
         )
+    # fmt: on
 
 
 @numba.jit
