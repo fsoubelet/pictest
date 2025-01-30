@@ -42,11 +42,10 @@ def attribute_particle_cells(
     minx, miny, minz = meshgrid.x_grid.min(), meshgrid.y_grid.min(), meshgrid.z_grid.min()
     part_cells = np.zeros_like(particles.x)
     nb_attribute_cells(
-        part_cells,
-        particles.x,
-        particles.y,
-        # particles.zeta,
-        particles.delta if use_delta is True else particles.zeta,
+        attributions=part_cells,
+        x=particles.x,
+        y=particles.y,
+        z=particles.delta if use_delta is True else particles.zeta,
         minx,
         miny,
         minz,
@@ -68,7 +67,7 @@ def nb_attribute_cells(
     attributions: numba.float64[:],  # type: ignore
     x: numba.float64[:],  # type: ignore
     y: numba.float64[:],  # type: ignore
-    zeta: numba.float64[:],  # type: ignore
+    z: numba.float64[:],  # type: ignore
     minx: numba.float64,  # type: ignore
     miny: numba.float64,  # type: ignore
     minz: numba.float64,  # type: ignore
@@ -91,14 +90,17 @@ def nb_attribute_cells(
         An array with a value corresponding to the attributed
         cell, for each individual particle.
     x : array64
-        Array with the x coordinates of all cells, as given by
-        the particles object.
+        Array with the x coordinates of all particles, as given
+        by the particles object.
     y : array64
-        Array with the y coordinates of all cells, as given by
-        the particles object.
-    zeta : array64
-        Array with the zeta coordinates of all cells, as given by
-        the particles object.
+        Array with the y coordinates of all particles, as given
+        by the particles object.
+    z : array64
+        Array with the chosen longitudinal coordinates of all
+        particles, as given by the particles object. In SIRE
+        the longitudinal 'momentum'-equivalent 'deltasp' is
+        used, but we can also use 'zeta' (z). Chosen by what
+        is provided to this function at call time.
     minx : float64
         The min value in x of the meshgrid.
     miny : float64
@@ -126,7 +128,7 @@ def nb_attribute_cells(
         attributions[part_index] = (
             int(np.floor((x[part_index] - minx) / deltax)) * ncellsx  # integer of the cell in horitontal
             + int(np.floor((y[part_index] - miny) / deltay)) * ncellsy  # integer of the cell in vertical
-            + int(np.floor((zeta[part_index] - minz) / deltaz)) * ncellsz  # integer of the cell in longitudinal
+            + int(np.floor((z[part_index] - minz) / deltaz)) * ncellsz  # integer of the cell in longitudinal
         )
     # fmt: on
 
