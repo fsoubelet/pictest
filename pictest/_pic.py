@@ -1,9 +1,9 @@
 """
 PIC IBS functionality: prototype element.
 """
-
+import warnings
 from __future__ import annotations
-
+from scipy.integrate import IntegrationWarning
 from functools import partial
 from logging import getLogger
 from typing import TYPE_CHECKING
@@ -203,13 +203,15 @@ class IBSParticleInCell(IBSKick):
         total_beam_intensity: float = _beam_intensity(particles)
         gemitt_x: float = _gemitt_x(particles, self._twiss["betx", self._name], self._twiss["dx", self._name])
         gemitt_y: float = _gemitt_y(particles, self._twiss["bety", self._name], self._twiss["dy", self._name])
-        return BjorkenMtingwaIBS(self._twiss).coulomb_log(
-            gemitt_x=gemitt_x,
-            gemitt_y=gemitt_y,
-            sigma_delta=sigma_delta,
-            bunch_length=bunch_length,
-            total_beam_intensity=total_beam_intensity,
-        )
+        with warnings.catch_warnings():  # Catch & ignore the scipy IntegrationWarning
+            warnings.simplefilter("ignore", category=IntegrationWarning)
+            return BjorkenMtingwaIBS(self._twiss).coulomb_log(
+                gemitt_x=gemitt_x,
+                gemitt_y=gemitt_y,
+                sigma_delta=sigma_delta,
+                bunch_length=bunch_length,
+                total_beam_intensity=total_beam_intensity,
+            )
     # fmt: on
 
     def track(self, particles: xt.Particles) -> None:
