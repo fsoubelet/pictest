@@ -1,9 +1,11 @@
 """
 PIC IBS functionality: prototype element.
 """
-import warnings
+
 from __future__ import annotations
-from scipy.integrate import IntegrationWarning
+
+import warnings
+
 from functools import partial
 from logging import getLogger
 from typing import TYPE_CHECKING
@@ -12,6 +14,7 @@ import numpy as np
 import xtrack as xt
 
 from joblib import Parallel, delayed
+from scipy.integrate import IntegrationWarning
 from xfields.ibs._analytical import BjorkenMtingwaIBS
 from xfields.ibs._formulary import (
     _beam_intensity,
