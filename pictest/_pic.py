@@ -238,21 +238,38 @@ class IBSParticleInCell(IBSKick):
         # Attribute particles to cells in the mesh
         attributions: np.ndarray = attribute_particle_cells(particles, meshgrid, self._use_delta)
         # ----------------------------------------------
-        # First we compute necessary properties for the T&A model
-        # ----------------------------------------------
         # Apply kicks according to chosen method, cell per cell (parallelized-ish)
         # Prefer threads as most of our compute is numba and should release the GIL
-        _ = Parallel(n_jobs=-2, prefer="threads")(
-            delayed(self.scatter_cell)(
-                cell,
-                attributions,
-                meshgrid.toty,
-                meshgrid.cell_volume,
-                self.delta_t,
-                particles,
+        # ----------------------------------------------
+        # For the Takizuka & Abe model
+        if self.model == "t&a":
+            LOGGER.debug("Applying PIC according to T&A model")
+            _ = Parallel(n_jobs=-2, prefer="threads")(
+                delayed(self.scatter_cell)(  # this is 'scatter_cell_maxcol_takizuka_abe'
+                    cell,
+                    attributions,
+                    meshgrid.cell_volume,
+                    self._get_coulomb_log(particles),
+                    self.delta_t,
+                    particles,
+                )
+                for cell in np.unique(attributions)
             )
-            for cell in np.unique(attributions)
-        )
+        # ----------------------------------------------
+        # For the SIRE model
+        else:
+            LOGGER.debug("Applying PIC according to SIRE model")
+            _ = Parallel(n_jobs=-2, prefer="threads")(
+                delayed(self.scatter_cell)(  # this is 'scatter_cell_maxcol_sire'
+                    cell,
+                    attributions,
+                    meshgrid.toty,
+                    meshgrid.cell_volume,
+                    self.delta_t,
+                    particles,
+                )
+                for cell in np.unique(attributions)
+            )
         # ----------------------------------------------
         # To go sequentially (this is much slower):
         # for cell in np.unique(attributions):
