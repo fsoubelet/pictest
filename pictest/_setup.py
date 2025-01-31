@@ -64,6 +64,9 @@ def install_ibs_pic(
     # if method.lower() == "maxcol":
     max_collisions = kwargs.pop("max_collisions")
     # ----------------------------------------------
+    # We need to get the (4D) twiss to pass it to elements
+    twiss = line.twiss(method="4d")
+    # ----------------------------------------------
     # Handle the possibly existing line tracker
     if _buffer is None:
         if not line._has_valid_tracker():
@@ -85,7 +88,7 @@ def install_ibs_pic(
     if s_pics is None:
         s_pics = np.linspace(0, line.get_length(), num_ibs_interactions + 1)[:-1]
     # ----------------------------------------------
-    # Create IBS elements (dummy)
+    # Create IBS elements to be inserted in the line
     ibs_elements = []
     ibs_names = []
     insertions = []
@@ -96,18 +99,22 @@ def install_ibs_pic(
         else:  # just distance from previous one
             dist_from_last_ibs = s_pos - s_pics[ii - 1]
         deltat = dist_from_last_ibs / speed  # [s]
-
-        ibs_elements.append(
-            IBSParticleInCell(
-                nx=nx,
-                ny=ny,
-                nz=nz,
-                cell_method=method,
-                delta_t=kdeltat if kdeltat is not None else deltat,
-                max_collisions=max_collisions,
-            )
+        # We create the element and set important properties
+        pic_name = f"ibs_pic_{ii:d}"
+        pic_element = IBSParticleInCell(
+            nx=nx,
+            ny=ny,
+            nz=nz,
+            cell_method=method,
+            delta_t=kdeltat if kdeltat is not None else deltat,
+            max_collisions=max_collisions,
         )
-        ibs_names.append(f"ibs_pic_{ii:d}")
+        pic_element._name = pic_name
+        pic_element._twiss = twiss
+        pic_element._scale_strength = 1
+        # Store these for later to be inserted
+        ibs_elements.append(pic_element)
+        ibs_names.append(pic_name)
         insertions.append((s_pos, [(ibs_names[-1], ibs_elements[-1])]))
     # ----------------------------------------------
     # Insert the created elements in the line
