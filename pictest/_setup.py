@@ -34,6 +34,13 @@ def install_ibs_pic(
         are installed.
     particle_ref : xpart.Particles (optional)
         Reference particle for the spacecharge elements.
+        The line's particle ref will be used if this is
+        not provided.
+    num_ibs_interactions : int
+        The number of PIC elements to insert in the line.
+        They are by default equi-distantly spaced through
+        the line when intalled, unless specific positions
+        are provided (see below).
     s_pics : ArrayLike (optional)
         Position of the IBS PIC elements. If not given,
         they will be equally spaced through the line.
@@ -59,6 +66,7 @@ def install_ibs_pic(
     nx = kwargs.pop("nx", 10)
     ny = kwargs.pop("ny", 10)
     nz = kwargs.pop("nz", 10)
+    model = kwargs.pop("model")  # should be provided
     method = kwargs.pop("method")  # should be provided
     kdeltat = kwargs.pop("delta_t", None)  # to override
     # if method.lower() == "maxcol":
@@ -105,6 +113,7 @@ def install_ibs_pic(
             nx=nx,
             ny=ny,
             nz=nz,
+            model=model,
             cell_method=method,
             delta_t=kdeltat if kdeltat is not None else deltat,
             max_collisions=max_collisions,
