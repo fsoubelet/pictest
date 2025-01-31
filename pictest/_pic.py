@@ -224,6 +224,10 @@ class IBSParticleInCell(IBSKick):
             The particles to apply the IBS kicks to.
         """
         # ----------------------------------------------
+        # Firstly if the scale is 0, we do not track
+        if self._scale_strength == 0:
+            return
+        # ----------------------------------------------
         # Determine mesh properties and create mesh
         x_range, y_range, z_range = mesh_limits(particles, self._use_delta)
         meshgrid = create_mesh(
