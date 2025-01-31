@@ -5,12 +5,21 @@ PIC IBS functionality: prototype element.
 from __future__ import annotations
 
 from functools import partial
+from logging import getLogger
 from typing import TYPE_CHECKING
 
 import numpy as np
 import xtrack as xt
 
 from joblib import Parallel, delayed
+from xfields.ibs._analytical import BjorkenMtingwaIBS
+from xfields.ibs._formulary import (
+    _beam_intensity,
+    _bunch_length,
+    _gemitt_x,
+    _gemitt_y,
+    _sigma_delta,
+)
 from xfields.ibs._kicks import IBSKick
 
 from pictest._cells import attribute_particle_cells
@@ -32,6 +41,8 @@ _METHOD_TO_TAKIZUKA_ABE_FUNC: dict[str, Callable] = {
     "maxcol": scatter_cell_maxcol_takizuka_abe,
     "oneperpart": scatter_cell_oneperpart_takizuka_abe,
 }
+
+LOGGER = getLogger(__name__)
 
 
 class IBSParticleInCell(IBSKick):
@@ -161,6 +172,11 @@ class IBSParticleInCell(IBSKick):
         self.max_collisions: int = max_collisions
         # TODO: this will have to adapt to the chosen model
         self.scatter_cell: Callable = partial(cell_scatter_function, max_collisions=max_collisions)
+        # The following might be needed (T&A model) but start unset.
+        # They will be set when calling 'install_ibs_pic'
+        self._name: str = None
+        self._twiss: xt.TwissTable = None
+        self._scale_strength: float = 0  # by default element does not "track"
 
     def __repr__(self) -> str:
         collstr = (
@@ -175,6 +191,24 @@ class IBSParticleInCell(IBSKick):
 
     def __str__(self) -> str:
         return "IBS Particle in Cell Element"
+
+    # fmt: off
+    def _get_coulomb_log(self, particles: xt.Particles) -> float:
+        """We need the bunch's Coulomb logarithm in the T&A model."""
+        LOGGER.debug("Computing emittances, momentum spread and bunch length from particles")
+        sigma_delta: float = _sigma_delta(particles)
+        bunch_length: float = _bunch_length(particles)
+        total_beam_intensity: float = _beam_intensity(particles)
+        gemitt_x: float = _gemitt_x(particles, self._twiss["betx", self._name], self._twiss["dx", self._name])
+        gemitt_y: float = _gemitt_y(particles, self._twiss["bety", self._name], self._twiss["dy", self._name])
+        return BjorkenMtingwaIBS(self._twiss).coulomb_log(
+            gemitt_x=gemitt_x,
+            gemitt_y=gemitt_y,
+            sigma_delta=sigma_delta,
+            bunch_length=bunch_length,
+            total_beam_intensity=total_beam_intensity,
+        )
+    # fmt: on
 
     def track(self, particles: xt.Particles) -> None:
         """
