@@ -540,5 +540,5 @@ def _draw_delta(
     )
     # ----------------------------------------------
     # From the variance we get stdev and draw delta
-    scale = np.std(variance)  # standard deviation
+    scale = np.sqrt(variance)  # standard deviation
     return np.random.normal(0, scale=scale)
