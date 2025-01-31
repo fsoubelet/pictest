@@ -205,8 +205,8 @@ def collide_particle_pair_takizuka_abe(
     # ----------------------------------------------
     # Get some global properties - nly have one particle
     # species so we take properties of the first particle
-    mass0 = particles.mass0[idx1]  # same for both
-    q0 = particles.q0[idx1]  # same for both
+    mass0 = particles.mass0
+    q0 = particles.q0
     # ----------------------------------------------
     # Get the particle properties needed for the collision
     px1, px2 = particles.px[idx1], particles.px[idx2]
