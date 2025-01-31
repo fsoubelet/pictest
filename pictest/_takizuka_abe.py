@@ -30,8 +30,8 @@ def scatter_cell_maxcol_takizuka_abe(
     volume: float,
     coulog: float,
     delta_t: float,
-    max_collisions: int,
     particles: xt.Particles,
+    max_collisions: int,
 ) -> None:
     """
     Considers a single cell of the meshgrid and applies collisions
