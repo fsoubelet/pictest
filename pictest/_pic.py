@@ -141,7 +141,7 @@ class IBSParticleInCell(IBSKick):
             for the meshgrid instead of the zeta coordinate.
         """
         # ----------------------------------------------
-        # Make sure we have a valid method, and max_collisions if relevant
+        # Ensure we have a valid model & method (and max_collisions if relevant)
         self.model = model.lower()
         self.method = cell_method.lower()
         if self.model not in ("sire", "t&a"):
@@ -153,15 +153,17 @@ class IBSParticleInCell(IBSKick):
             raise ValueError("Please provide 'max_collisions' when using 'maxcol'")
         # ----------------------------------------------
         # Store information on using delta or zeta for longitudinal coord
+        # This is mostly for testing purposes when exploring SIRE model
         self._use_delta = kwargs.pop("use_delta", False)
         # ----------------------------------------------
-        # Determine the cell scattering function based on the method
-        # TODO: based on approach set this to either T&A or SIRE vars
-        _method_to_func = {
-            "maxcol": scatter_cell_maxcol_sire,
-            # "allpairs": scatter_cell_allpairs,
-            "oneperpart": scatter_cell_oneperpart_sire,
-        }
+        # We determine the cell scattering functions based
+        # on both the chosen model and method
+        if self.model == "t&a":
+            _method_to_func = _METHOD_TO_TAKIZUKA_ABE_FUNC
+        else:  # this is SIRE
+            _method_to_func = _METHOD_TO_SIRE_FUNC
+        # And now the scattering function itself (maxcol
+        # or oneperpart) for the relevant chosen model
         cell_scatter_function = _method_to_func[self.method]
         # ----------------------------------------------
         # We store everything that is relevant for later
@@ -170,12 +172,12 @@ class IBSParticleInCell(IBSKick):
         self.nz: int = nz
         self.delta_t: float = delta_t
         self.max_collisions: int = max_collisions
-        # TODO: this will have to adapt to the chosen model
         self.scatter_cell: Callable = partial(cell_scatter_function, max_collisions=max_collisions)
-        # The following might be needed (T&A model) but start unset.
-        # They will be set when calling 'install_ibs_pic'
-        self._name: str = None
-        self._twiss: xt.TwissTable = None
+        # ----------------------------------------------
+        # The following are needed but start unset. They are
+        # set when calling 'pictest.install_ibs_pic()'
+        self._name: str = None  # for the t&a model coulog
+        self._twiss: xt.TwissTable = None  # for the t&a model coulog
         self._scale_strength: float = 0  # by default element does not "track"
 
     def __repr__(self) -> str:
@@ -235,6 +237,8 @@ class IBSParticleInCell(IBSKick):
         # ----------------------------------------------
         # Attribute particles to cells in the mesh
         attributions: np.ndarray = attribute_particle_cells(particles, meshgrid, self._use_delta)
+        # ----------------------------------------------
+        # First we compute necessary properties for the T&A model
         # ----------------------------------------------
         # Apply kicks according to chosen method, cell per cell (parallelized-ish)
         # Prefer threads as most of our compute is numba and should release the GIL
