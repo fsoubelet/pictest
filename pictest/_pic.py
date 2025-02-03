@@ -184,14 +184,19 @@ class IBSParticleInCell(IBSKick):
         self._scale_strength: float = 0  # by default element does not "track"
 
     def __repr__(self) -> str:
-        collstr = (
-            f"\t max_collisions={self.max_collisions} \n" if self.method.lower() == "maxcol" else ""
-        )
+        methodline = f"  method={self.method}"
+        if self.method == "maxcol":
+            methodline += f" (maxcol={self.max_collisions})\n"
+        else:
+            methodline += "\n"
         return (
-            f"{self.__class__.__name__} (method {self.method}) \n" + collstr + f"\t nx={self.nx} \n"
-            f"\t ny={self.ny} \n"
-            f"\t nz={self.nz} \n"
-            f"\t delta_t={self.delta_t} \n"
+            f"{self.__class__.__name__} \n"
+            + f"  model={self.model.upper()} \n"
+            + methodline
+            + f"  nx={self.nx}\n"
+            + f"  ny={self.ny}\n"
+            + f"  nz={self.nz}\n"
+            + f"  delta_t={self.delta_t}\n"
         )
 
     def __str__(self) -> str:
