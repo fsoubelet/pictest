@@ -210,7 +210,7 @@ def collide_particle_pair_sire(
     # Compute the momentum deltas (compiled code)
     # These are already divided by two so directly to apply!
     # This way more of the operations are done in compiled code
-    deltap1cmx, deltap1cmy, deltap1cmz = nb_sire_coulomb_collision_deltas(
+    deltap1cmx, deltap1cmy, deltap1cmz = sire_coulomb_collision_deltas(
         px1, px2, py1, py2, delta1, delta2, phi, toty, density, delta_t, beta0, gamma0, r0
     )
     # ----------------------------------------------
@@ -227,7 +227,7 @@ def collide_particle_pair_sire(
 
 
 @numba.jit
-def nb_sire_coulomb_collision_deltas(
+def sire_coulomb_collision_deltas(
     px1: numba.float64,  # type: ignore
     px2: numba.float64,  # type: ignore
     py1: numba.float64,  # type: ignore
