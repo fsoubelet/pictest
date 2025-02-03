@@ -214,7 +214,7 @@ def collide_particle_pair_takizuka_abe(
     delta1, delta2 = particles.delta[idx1], particles.delta[idx2]
     # ----------------------------------------------
     # Compute the momentum deltas (compiled code)
-    delta_px, delta_py, delta_pz = nb_takizuka_abe_collision_deltas(
+    delta_px, delta_py, delta_pz = takizuka_abe_collision_deltas(
         px1, px2, py1, py2, delta1, delta2, q0, mass0, coulog, delta_t, n_l
     )
     # ----------------------------------------------
@@ -231,7 +231,7 @@ def collide_particle_pair_takizuka_abe(
 
 
 @numba.jit
-def nb_takizuka_abe_collision_deltas(
+def takizuka_abe_collision_deltas(
     px1: numba.float64,  # type: ignore
     px2: numba.float64,  # type: ignore
     py1: numba.float64,  # type: ignore
@@ -322,7 +322,7 @@ def nb_takizuka_abe_collision_deltas(
     # THETA: float = _draw_THETA()
     # ----------------------------------------------
     # We compute U_T defined below Eq (4d)
-    u_t = np.sqrt(ux**2 + uy**2)
+    u_t: float = np.sqrt(ux**2 + uy**2)
     # ----------------------------------------------
     # Now, if u_t != 0 we compute delta_ux, delta_uy
     # and delta_uz from Eq (4.b), Eq (4.c) & Eq (4.d)
