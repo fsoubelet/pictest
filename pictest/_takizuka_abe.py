@@ -293,9 +293,10 @@ def nb_takizuka_abe_collision_deltas(
     # ----------------------------------------------
     # First define the 'u' variables from Eq. (1)
     # We divide by mass because xtrack uses momentum
-    _ev_to_J = 1.602176634 * 10**-19  # conversion factor from eV to J
-    _eV_to_g = 1e3 * _ev_to_J / c**2  # conversion factor from eV to kg
-    mass_g = mass0 * _eV_to_g  # we want mass in [g]
+    # _ev_to_J = 1.602176634 * 10**-19  # conversion factor from eV to J
+    # _eV_to_g = 1e3 * _ev_to_J / c**2  # conversion factor from eV to kg
+    # mass_g = mass0 * _eV_to_g  # we want mass in [g]
+    mass_g = mass0  # TODO: revert this test & uncomment above
     ux = (px1 - px2) / mass_g  # ux = vx1 - vx2
     uy = (py1 - py2) / mass_g  # uy = vy1 - vy2
     uz = (delta1 - delta2) / mass_g  # uz = vz1 - vz2
@@ -312,12 +313,13 @@ def nb_takizuka_abe_collision_deltas(
     # ----------------------------------------------
     # We draw the polar collision angle PHI from Eq (3)
     # (from a uniform distribution between 0 and 2pi)
-    PHI = _draw_PHI()
+    PHI: float = _draw_PHI()
     # ----------------------------------------------
     # We draw a value for delta according to Eq (8a)
     # and then plug its value into Eq (7a) for THETA
-    delta = _draw_delta(q0, m_alpha_beta, coulog, delta_t, n_l, u)
-    THETA = np.arcsin(2 * delta / (1 + delta**2))
+    delta: float = _draw_delta(q0, m_alpha_beta, coulog, delta_t, n_l, u)
+    THETA: float = np.arcsin(2 * delta / (1 + delta**2))
+    # THETA: float = _draw_THETA()
     # ----------------------------------------------
     # We compute U_T defined below Eq (4d)
     u_t = np.sqrt(ux**2 + uy**2)
