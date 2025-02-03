@@ -542,3 +542,22 @@ def _draw_delta(
     # From the variance we get stdev and draw delta
     scale = np.sqrt(variance)  # standard deviation
     return np.random.normal(0, scale=scale)
+
+
+@numba.jit
+def _draw_THETA() -> numba.float64:  # type: ignore
+    """
+    Traditionnally we would determine the properties
+    of the Gaussian distribution from which to draw
+    delta, and then compute theta from the drawn
+    variable as an arcsin. Considering arcsing yields
+    values between -pi/2 and pi/2, for or a simplified
+    (and faster) model we can draw THETA via a uniform
+    draw from this range.
+
+    Returns
+    -------
+    THETA : float64
+        A random number between -pi/2 and pi/2.
+    """
+    return np.random.uniform(0, -np.pi / 2, np.pi / 2)
