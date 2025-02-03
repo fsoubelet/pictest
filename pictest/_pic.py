@@ -206,8 +206,8 @@ class IBSParticleInCell(IBSKick):
         total_beam_intensity: float = _beam_intensity(particles)
         gemitt_x: float = _gemitt_x(particles, self._twiss["betx", self._name], self._twiss["dx", self._name])
         gemitt_y: float = _gemitt_y(particles, self._twiss["bety", self._name], self._twiss["dy", self._name])
-        with warnings.catch_warnings():  # Catch & ignore the scipy IntegrationWarning
-            warnings.simplefilter("ignore", category=IntegrationWarning)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
             return BjorkenMtingwaIBS(self._twiss).coulomb_log(
                 gemitt_x=gemitt_x,
                 gemitt_y=gemitt_y,
