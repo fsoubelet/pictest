@@ -293,10 +293,10 @@ def takizuka_abe_collision_deltas(
     # ----------------------------------------------
     # First define the 'u' variables from Eq. (1)
     # We divide by mass because xtrack uses momentum
-    # _ev_to_J = 1.602176634 * 10**-19  # conversion factor from eV to J
-    # _eV_to_g = 1e3 * _ev_to_J / c**2  # conversion factor from eV to kg
-    # mass_g = mass0 * _eV_to_g  # we want mass in [g]
-    mass_g = mass0  # TODO: revert this test & uncomment above
+    _ev_to_J = 1.602176634 * 10**-19  # conversion factor from eV to J
+    _eV_to_g = 1e3 * _ev_to_J / c**2  # conversion factor from eV to kg
+    mass_g = mass0 * _eV_to_g  # we want mass in [g]
+    # mass_g = mass0  # TODO: revert this test & uncomment above
     ux = (px1 - px2) / mass_g  # ux = vx1 - vx2
     uy = (py1 - py2) / mass_g  # uy = vy1 - vy2
     uz = (delta1 - delta2) / mass_g  # uz = vz1 - vz2
