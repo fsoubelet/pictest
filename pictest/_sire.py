@@ -303,11 +303,10 @@ def sire_coulomb_collision_deltas(
     # ----------------------------------------------
     # Firstly, assert we can get a Coulog otherwise ignore all
     if coulomb <= 1:
-        print("Coulomb <= 1, ignoring collision")
         return (0.0, 0.0, 0.0)
-    # ----------------------------------------------
-    # Firstly, assert we can get a Coulog otherwise ignore all
     coulog = np.log(coulomb)
+    # ----------------------------------------------
+    # These I have no idea about, just copied from SIRE
     one_minus_cos_psi = (
         2 * np.pi * c * density * r0**2 * delta_t * coulog / (gamma0**2 * betatilde**3)
     )
