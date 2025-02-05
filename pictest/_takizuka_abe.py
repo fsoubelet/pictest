@@ -67,6 +67,7 @@ def scatter_cell_maxcol_takizuka_abe(
     cell_particles = find_index_of_all_particles_in_given_cell(cell_number, attributions)
     n_macroparts: int = cell_particles.size  # number of parts in this cell
     cell_particles = list(cell_particles)  # INDICES - need as list for sampling
+    print(f"CELL {cell_number:d}, has {n_macroparts:d} parts")
     # ----------------------------------------------
     # Determine the number of collisions to do in this cell. If there are more
     # max collisions than particles, we do 1 less than particles (if there are 2
@@ -202,6 +203,7 @@ def collide_particle_pair_takizuka_abe(
         The `xtrack.Particles` object with the particles
         information, to be directly modified.
     """
+    print(f"Colliding particles at idx {idx1} and {idx2}")
     # ----------------------------------------------
     # Get some global properties - nly have one particle
     # species so we take properties of the first particle
@@ -319,7 +321,7 @@ def takizuka_abe_collision_deltas(
     # and then plug its value into Eq (7a) for THETA
     delta: float = _draw_delta(q0, m_alpha_beta, coulog, delta_t, n_l, u)
     THETA: float = np.arcsin(2 * delta / (1 + delta**2))
-    # THETA: float = _draw_THETA()
+    # THETA: float = _draw_THETA()  # TODO: revert this test & uncomment above
     # ----------------------------------------------
     # We compute U_T defined below Eq (4d)
     u_t: float = np.sqrt(ux**2 + uy**2)
@@ -354,6 +356,8 @@ def takizuka_abe_collision_deltas(
     res_delta_pz = m_alpha_beta * delta_uz
     # ----------------------------------------------
     # And finally we can return the computed momentum deltas
+    print("phi=", phi, "theta=", theta, "u=", u, "PHI=", PHI, "delta=", delta, "THETA=", THETA)
+    print("delta_px=", res_delta_px, "delta_py=", res_delta_py, "delta_pz=", res_delta_pz)
     return res_delta_px, res_delta_py, res_delta_pz
 
 
