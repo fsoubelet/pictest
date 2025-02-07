@@ -567,4 +567,4 @@ def _draw_THETA() -> numba.float64:  # type: ignore
     THETA : float64
         A random number between -pi/2 and pi/2.
     """
-    return np.random.uniform(-np.pi / 4, np.pi / 4)
+    return np.random.uniform(-np.pi / 8, np.pi / 8)
