@@ -1,7 +1,7 @@
 import contextlib
 import sys
 
-from ._meshgrid import MeshGrid, create_mesh
+from ._meshgrid import MeshGrid, create_mesh, mesh_limits
 from ._pic import IBSParticleInCell
 from ._plotting import plot_meshgrid_points, plot_meshgrid_voxels, plot_particles_3dtrace
 from ._setup import install_ibs_pic
@@ -27,6 +27,7 @@ __all__ = [
     "create_mesh",
     "IBSParticleInCell",
     "install_ibs_pic",
+    "mesh_limits",
     "nostdout",
     "plot_meshgrid_points",
     "plot_meshgrid_voxels",
