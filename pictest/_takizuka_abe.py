@@ -296,16 +296,16 @@ def takizuka_abe_collision_deltas(
     # First define the 'u' variables from Eq. (1)
     # We divide by mass because xtrack uses momentum
     _ev_to_J = 1.602176634 * 10**-19  # conversion factor from eV to J
-    _eV_to_g = 1e3 * _ev_to_J / c**2  # conversion factor from eV to kg
-    mass_g = mass0 * _eV_to_g  # we want mass in [g]
-    # mass_g = mass0  # TODO: revert this test & uncomment above
-    ux = (px1 - px2) / mass_g  # ux = vx1 - vx2
-    uy = (py1 - py2) / mass_g  # uy = vy1 - vy2
-    uz = (delta1 - delta2) / mass_g  # uz = vz1 - vz2
+    _eV_to_kg = _ev_to_J / c**2  # conversion factor from eV to kg
+    mass_kg = mass0 * _eV_to_kg  # we want mass in [g]
+    # mass_kg = mass0  # TODO: revert this test & uncomment above
+    ux = (px1 - px2) / mass_kg  # ux = vx1 - vx2
+    uy = (py1 - py2) / mass_kg  # uy = vy1 - vy2
+    uz = (delta1 - delta2) / mass_kg  # uz = vz1 - vz2
     # ----------------------------------------------
     # We compute m_alpha_beta from Eq (6). We only have
     # one species so m_alpha = m_beta = mass_g
-    m_alpha_beta = mass_g / 2  # simplified mass_g**2 / (2 * mass_g)
+    m_alpha_beta = mass_kg / 2  # simplified mass_g**2 / (2 * mass_g)
     # ----------------------------------------------
     # Now we compute phi, theta and then u from Eq. (2)
     # See relevant function docstrings for information
