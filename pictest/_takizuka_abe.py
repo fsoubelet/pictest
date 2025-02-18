@@ -83,6 +83,7 @@ def scatter_cell_maxcol_takizuka_abe(
     N0 = np.sum(particles.state > 0) * weight  # all alive parts, "particle number in a cloud"
     V0 = volume  # happens to be the same for all cells
     n_l = Ni * N0 / V0  # since Ni = Ne
+    print(f"{Ni=}, {N0=}, {V0=}, {n_l=}")
     # ----------------------------------------------
     # Now we collide as long as we have to
     while n_collisions > 0:
