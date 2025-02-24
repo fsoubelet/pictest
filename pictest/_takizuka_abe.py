@@ -205,10 +205,9 @@ def collide_particle_pair_takizuka_abe(
         The maximum impact parameter, which is
         restricted to the size of the cell.
     n_l : float64
-        The lower density between n_alpha and n_beta.
-        These are defined in the "determination of pairs"
-        paragraph. Note that n_alpha = n_beta = n_l (only
-        have one species of particles).
+        The particle density in the cell, in the way of
+        Gjonaj. This is the (real) number of particles
+        over the cell volume (since we have one species).
     delta_t : float
         The time step of the IBS interaction, in [s].
     particles : xt.Particles
