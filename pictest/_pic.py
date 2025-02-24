@@ -4,8 +4,6 @@ PIC IBS functionality: prototype element.
 
 from __future__ import annotations
 
-import warnings
-
 from functools import partial
 from logging import getLogger
 from typing import TYPE_CHECKING
@@ -14,15 +12,6 @@ import numpy as np
 import xtrack as xt
 
 from joblib import Parallel, delayed
-from scipy.integrate import IntegrationWarning
-from xfields.ibs._analytical import BjorkenMtingwaIBS
-from xfields.ibs._formulary import (
-    _beam_intensity,
-    _bunch_length,
-    _gemitt_x,
-    _gemitt_y,
-    _sigma_delta,
-)
 from xfields.ibs._kicks import IBSKick
 
 from pictest._cells import attribute_particle_cells
@@ -202,26 +191,6 @@ class IBSParticleInCell(IBSKick):
     def __str__(self) -> str:
         return "IBS Particle in Cell Element"
 
-    # fmt: off
-    def _get_coulomb_log(self, particles: xt.Particles) -> float:
-        """We need the bunch's Coulomb logarithm in the T&A model."""
-        LOGGER.debug("Computing emittances, momentum spread and bunch length from particles")
-        sigma_delta: float = _sigma_delta(particles)
-        bunch_length: float = _bunch_length(particles)
-        total_beam_intensity: float = _beam_intensity(particles)
-        gemitt_x: float = _gemitt_x(particles, self._twiss["betx", self._name], self._twiss["dx", self._name])
-        gemitt_y: float = _gemitt_y(particles, self._twiss["bety", self._name], self._twiss["dy", self._name])
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            return BjorkenMtingwaIBS(self._twiss).coulomb_log(
-                gemitt_x=gemitt_x,
-                gemitt_y=gemitt_y,
-                sigma_delta=sigma_delta,
-                bunch_length=bunch_length,
-                total_beam_intensity=total_beam_intensity,
-            )
-    # fmt: on
-
     def track(self, particles: xt.Particles) -> None:
         """
         Method to split the physical space with a meshgrid,
@@ -258,7 +227,6 @@ class IBSParticleInCell(IBSKick):
         # For the Takizuka & Abe model
         if self.model == "t&a":
             LOGGER.debug("Applying PIC according to T&A model")
-            # coulog = self._get_coulomb_log(particles)
             _ = Parallel(n_jobs=-2, prefer="threads")(
                 delayed(self.scatter_cell)(  # this is 'scatter_cell_maxcol_takizuka_abe'
                     cell,
