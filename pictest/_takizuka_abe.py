@@ -355,14 +355,14 @@ def takizuka_abe_collision_deltas(
             + ux * u * np.sin(THETA) * np.sin(PHI) / u_t
             - uy * (1 - np.cos(THETA))
         )
-        delta_uz = -1 * u_t * np.sin(THETA) * np.cos(PHI) - uz * (1 - np.cos(THETA))
+        delta_uz = -u_t * np.sin(THETA) * np.cos(PHI) - uz * (1 - np.cos(THETA))
     # ----------------------------------------------
     # Otherwise we compute to their alternative forms
     # as in Eq (4b'), Eq (4c') and Eq (4d')
     else:
         delta_ux = u * np.sin(THETA) * np.cos(PHI)
         delta_uy = u * np.sin(THETA) * np.sin(PHI)
-        delta_uz = u * (np.cos(THETA) - 1)
+        delta_uz = - u * (1 - np.cos(THETA))
     # ----------------------------------------------
     # These are deltas to apply to velocities (see Eq (5a))
     # so we convert to deltas to apply to momenta (used in
