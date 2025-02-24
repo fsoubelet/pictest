@@ -293,9 +293,9 @@ def takizuka_abe_collision_deltas(
     delta_t : float64
         The time interval for the IBS interaction, in [s].
     n_l : float64
-        The lower density between n_alpha and n_beta. These
-        are defined in the "determination of pairs" paragraph.
-        Note that n_alpha = n_beta = n_l (only one species).
+        The particle density in the cell, in the way of
+        Gjonaj. This is the (real) number of particles
+        over the cell volume (since we have one species).
 
     Returns
     -------
