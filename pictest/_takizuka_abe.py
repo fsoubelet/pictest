@@ -14,7 +14,6 @@ import numba
 import numpy as np
 
 from scipy.constants import c, epsilon_0
-from sympy import Ne
 
 from pictest._cells import find_index_of_all_particles_in_given_cell
 
