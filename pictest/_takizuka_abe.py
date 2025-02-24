@@ -162,10 +162,12 @@ def scatter_cell_oneperpart_takizuka_abe(
     # We determine the n_l parameter for the collision function
     # which is define in the "Determination of pairs" paragraph
     weight = particles.weight[0]  # same for all, accounts for real part / macropart
-    Ni = n_macroparts * weight  # only one species, Ni = Ne
-    N0 = np.sum(particles.state > 0) * weight  # all alive parts, "particle number in a cloud"
-    V0 = volume  # happens to be the same for all cells
-    n_l = Ni * N0 / V0  # since Ni = Ne
+    Npart = n_macroparts * weight  # only one species, Ni = Ne
+    n_l = Npart / meshgrid.cell_volume  # Gjonaj uses Ne directly -> (real) parts / volume
+    # N0 = np.sum(particles.state > 0) * weight  # all alive parts, "particle number in a cloud"
+    # V0 = meshgrid.cell_volume  # happens to be the same for all cells
+    # n_l = Ni * N0 / V0  # since Ni = Ne
+    # print(f"{Ni=}, {N0=}, {V0=}, {n_l=}")
     # ----------------------------------------------
     # Now we collide for every single possible pair
     try:
