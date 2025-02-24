@@ -232,10 +232,10 @@ def collide_particle_pair_takizuka_abe(
     # ----------------------------------------------
     # Apply the deltas to the particles (add to part1, remove from part2)
     particles.px[idx1] += delta_px
-    particles.py[idx1] += delta_py
-    particles.delta[idx1] += delta_pz
     particles.px[idx2] -= delta_px
+    particles.py[idx1] += delta_py
     particles.py[idx2] -= delta_py
+    particles.delta[idx1] += delta_pz
     particles.delta[idx2] -= delta_pz
 
 
