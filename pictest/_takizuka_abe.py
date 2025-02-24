@@ -335,7 +335,8 @@ def takizuka_abe_collision_deltas(
     # We draw a value for delta according to Eq (8a)
     # and then plug its value into relation between
     # Eq (7b) and Eq (8a): delta = tan(THETA / 2)
-    delta: float = _draw_delta(q0, m_alpha_beta, coulog, delta_t, n_l, u)
+    # delta: float = _draw_delta(q0, m_alpha_beta, coulog, delta_t, n_l, u)
+    delta = _draw_delta_gjonaj(q0, n_l, coulog, m_alpha_beta, u, delta_t)
     THETA: float = 2 * np.arctan(delta)
     # delta = None  # TODO: revert this test & uncomment above
     # THETA: float = _draw_THETA()  # TODO: revert this test & uncomment above
