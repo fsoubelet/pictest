@@ -383,6 +383,8 @@ def takizuka_abe_collision_deltas(
 # ----- Private Helpers for Takizuka and Abe ----- #
 
 
+# OBSOLETE! We actually don't need this to compute the
+# little u since it's just the norm of (ux, uy, uz).T
 @numba.jit
 def _compute_phi(
     ux: numba.float64,  # type: ignore
@@ -428,6 +430,8 @@ def _compute_phi(
     return second_root
 
 
+# OBSOLETE! We actually don't need this to compute the
+# little u since it's just the norm of (ux, uy, uz).T
 @numba.jit
 def _compute_theta(
     ux: numba.float64,  # type: ignore
