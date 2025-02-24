@@ -258,13 +258,12 @@ class IBSParticleInCell(IBSKick):
         # For the Takizuka & Abe model
         if self.model == "t&a":
             LOGGER.debug("Applying PIC according to T&A model")
-            coulog = self._get_coulomb_log(particles)
+            # coulog = self._get_coulomb_log(particles)
             _ = Parallel(n_jobs=-2, prefer="threads")(
                 delayed(self.scatter_cell)(  # this is 'scatter_cell_maxcol_takizuka_abe'
                     cell,
                     attributions,
-                    meshgrid.cell_volume,
-                    coulog,
+                    meshgrid,
                     self.delta_t,
                     particles,
                 )
