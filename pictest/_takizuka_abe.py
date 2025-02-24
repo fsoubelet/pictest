@@ -50,19 +50,17 @@ def scatter_cell_maxcol_takizuka_abe(
     attributions : np.ndarray
         The array of cell attributions for each particle, as given
         by the `attribute_particle_cells_like_sire` function.
-    volume : float
-        The volume of the cell to consider, in [m^3]. All cells
-        have the same volume as the meshgrid is uniform.
-    coulog : float
-        The Coulomb logarithm for the whole bunch.
+    meshgrid : MeshGrid
+        The meshgrid information, in [m^3]. Used to take and
+        pass cell properties where relevant.
     delta_t : float
         The time step of the IBS effect application, in [s].
         Should depend on the element length and the particle
         velocity.
-    max_collisions : int
-        The maximum number of collisions to apply in the cell.
     particles : xtrack.Particles
         The particles distribution object to consider and act on.
+    max_collisions : int
+        The maximum number of collisions to apply in the cell.
     """
     # ----------------------------------------------
     # Get some cell-specific parameters we will need
@@ -110,8 +108,7 @@ def scatter_cell_maxcol_takizuka_abe(
 def scatter_cell_oneperpart_takizuka_abe(
     cell_number: int,
     attributions: np.ndarray,
-    volume: float,
-    coulog: float,
+    meshgrid: MeshGrid,
     delta_t: float,
     particles: xt.Particles,
     **kwargs,
@@ -130,11 +127,9 @@ def scatter_cell_oneperpart_takizuka_abe(
     attributions : np.ndarray
         The array of cell attributions for each particle, as given
         by the `attribute_particle_cells_like_sire` function.
-    volume : float
-        The volume of the cell to consider, in [m^3]. All cells
-        have the same volume as the meshgrid is uniform.
-    coulog : float
-        The Coulomb logarithm for the whole bunch.
+    meshgrid : MeshGrid
+        The meshgrid information, in [m^3]. Used to take and
+        pass cell properties where relevant.
     delta_t : float
         The time step of the IBS effect application, in [s].
         Should depend on the element length and the particle
