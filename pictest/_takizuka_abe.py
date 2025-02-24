@@ -468,7 +468,7 @@ def _draw_delta(
 @numba.jit
 def _draw_delta_gjonaj(
     q0: numba.float64,  # type: ignore
-    Ne: numba.float64,  # type: ignore
+    n_l: numba.float64,  # type: ignore
     coulog: numba.float64,  # type: ignore
     m_reduced: numba.float64,  # type: ignore
     u: numba.float64,  # type: ignore
@@ -484,9 +484,10 @@ def _draw_delta_gjonaj(
     q0 : float64
         The charge of the particles in the pair (same
         species), in [e].
-    Ne : float64
-        The species density in the cell (number of parts
-        divided by the cell volume), in [m^-3].
+    n_l : float64
+        The particle density in the cell, in the way of
+        Gjonaj. This is the (real) number of particles
+        over the cell volume (only one species), in [m^-3].
     coulog : float64
         The Coulomb logarithm for the whole bunch.
     m_reduced : float64
@@ -505,9 +506,10 @@ def _draw_delta_gjonaj(
         A random number from the relevant distribution.
     """
     # ----------------------------------------------
-    # We compute the variance as described by
-    # Eq. (1) of Gjonaj's paper
-    variance = delta_t * (q0**4 * Ne * coulog) / (8 * np.pi * epsilon_0**2 * m_reduced**2 * u**3)
+    # We compute the variance as described by Eq. (1)
+    # of Gjonaj's paper (Ne for him is n_l for me)
+    # and reduced mass is m_alpha_beta in above functions
+    variance = delta_t * (q0**4 * n_l * coulog) / (8 * np.pi * epsilon_0**2 * m_reduced**2 * u**3)
     # ----------------------------------------------
     # From the variance we get stdev and draw delta
     scale = np.sqrt(variance)  # standard deviation
