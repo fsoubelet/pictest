@@ -320,6 +320,12 @@ def takizuka_abe_collision_deltas(
     # one species so m_alpha = m_beta = mass_kg
     m_alpha_beta = mass_kg / 2  # simplified mass_kg**2 / (2 * mass_kg)
     # ----------------------------------------------
+    # We compute a coulomb log for this collision
+    # according to bmin and bmax of E. Gjonaj
+    bmin = q0**2 / (m_alpha_beta * u**2)
+    bmax = max(dx, dy)  # same for all collisions, should be passed!
+    coulog = np.log(bmax / bmin)
+    # ----------------------------------------------
     # We draw a value for delta according to Eq (8a)
     # and then plug its value into relation between
     # Eq (7b) and Eq (8a): delta = tan(THETA / 2)
