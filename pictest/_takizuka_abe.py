@@ -303,20 +303,22 @@ def takizuka_abe_collision_deltas(
     ux = (px1 - px2) / mass_kg  # ux = vx1 - vx2
     uy = (py1 - py2) / mass_kg  # uy = vy1 - vy2
     uz = (delta1 - delta2) / mass_kg  # uz = vz1 - vz2
-    # ----------------------------------------------
-    # We compute m_alpha_beta from Eq (6). We only have
-    # one species so m_alpha = m_beta = mass_kg
-    m_alpha_beta = mass_kg / 2  # simplified mass_kg**2 / (2 * mass_kg)
+    # We compute 'u', which is the norm of [ux, uy, uz].T
+    u = np.sqrt(ux**2 + uy**2 + uz**2)  # faster than np.linalg.norm([ux, uy, uz])
     # ----------------------------------------------
     # Now we compute phi, theta and then u from Eq. (2)
     # See relevant function docstrings for information
-    phi = _compute_phi(ux, uy)
-    theta = _compute_theta(ux, uy, uz, phi)
-    u = np.sin(theta) * np.cos(phi) * ux + np.sin(theta) * np.sin(phi) * uy + np.cos(theta) * uz
+    # phi = _compute_phi(ux, uy)
+    # theta = _compute_theta(ux, uy, uz, phi)
+    # u = np.sin(theta) * np.cos(phi) * ux + np.sin(theta) * np.sin(phi) * uy + np.cos(theta) * uz
     # ----------------------------------------------
     # We draw the polar collision angle PHI from Eq (3)
     # (from a uniform distribution between 0 and 2pi)
     PHI: float = _draw_PHI()
+    # ----------------------------------------------
+    # We compute m_alpha_beta from Eq (6). We only have
+    # one species so m_alpha = m_beta = mass_kg
+    m_alpha_beta = mass_kg / 2  # simplified mass_kg**2 / (2 * mass_kg)
     # ----------------------------------------------
     # We draw a value for delta according to Eq (8a)
     # and then plug its value into relation between
