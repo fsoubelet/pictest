@@ -311,18 +311,13 @@ def takizuka_abe_collision_deltas(
     _ev_to_J = 1.602176634 * 10**-19  # conversion factor from eV to J
     _eV_to_kg = _ev_to_J / c**2  # conversion factor from eV to kg
     mass_kg = mass0 * _eV_to_kg  # we want mass in [kg]
-    # mass_kg = mass0  # TODO: revert this test & uncomment above
+    # ----------------------------------------------
+    # We compute ux, uy, and uz as in Eq (1) of T&A from
+    # momenta, then 'u' which is the norm of [ux, uy, uz].T
     ux = (px1 - px2) / mass_kg  # ux = vx1 - vx2
     uy = (py1 - py2) / mass_kg  # uy = vy1 - vy2
     uz = (delta1 - delta2) / mass_kg  # uz = vz1 - vz2
-    # We compute 'u', which is the norm of [ux, uy, uz].T
     u = np.sqrt(ux**2 + uy**2 + uz**2)  # faster than np.linalg.norm([ux, uy, uz])
-    # ----------------------------------------------
-    # Now we compute phi, theta and then u from Eq. (2)
-    # See relevant function docstrings for information
-    # phi = _compute_phi(ux, uy)
-    # theta = _compute_theta(ux, uy, uz, phi)
-    # u = np.sin(theta) * np.cos(phi) * ux + np.sin(theta) * np.sin(phi) * uy + np.cos(theta) * uz
     # ----------------------------------------------
     # We draw the polar collision angle PHI from Eq (3)
     # (from a uniform distribution between 0 and 2pi)
@@ -542,9 +537,15 @@ def _draw_THETA() -> numba.float64:  # type: ignore
 
 # ----- UNUSED BUT NEEDED FOR SOME NOTEBOOKS ----- #
 
+# Code that called the below in 'takizuka_abe_collision_deltas'
+# This is obsolete as we can just get u as the norm of [ux, uy, uz].T
+# ----------------------------------------------
+# Now we compute phi, theta and then u from Eq. (2)
+# See relevant function docstrings for information
+# phi = _compute_phi(ux, uy)
+# theta = _compute_theta(ux, uy, uz, phi)
+# u = np.sin(theta) * np.cos(phi) * ux + np.sin(theta) * np.sin(phi) * uy + np.cos(theta) * uz
 
-# OBSOLETE! We actually don't need this to compute the
-# little u since it's just the norm of (ux, uy, uz).T
 @numba.jit
 def _compute_phi(
     ux: numba.float64,  # type: ignore
@@ -590,8 +591,6 @@ def _compute_phi(
     return second_root
 
 
-# OBSOLETE! We actually don't need this to compute the
-# little u since it's just the norm of (ux, uy, uz).T
 @numba.jit
 def _compute_theta(
     ux: numba.float64,  # type: ignore
