@@ -82,7 +82,7 @@ def scatter_cell_maxcol_takizuka_abe(
     # which is define in the "Determination of pairs" paragraph
     weight = particles.weight[0]  # same for all, accounts for real part / macropart
     Npart = n_macroparts * weight  # only one species, Ni = Ne
-    nl = Npart / meshgrid.cell_volume  # Gjonaj uses Ne directly -> (real) parts / volume
+    n_l = Npart / meshgrid.cell_volume  # Gjonaj uses Ne directly -> (real) parts / volume
     # N0 = np.sum(particles.state > 0) * weight  # all alive parts, "particle number in a cloud"
     # V0 = meshgrid.cell_volume  # happens to be the same for all cells
     # n_l = Ni * N0 / V0  # since Ni = Ne
@@ -100,7 +100,7 @@ def scatter_cell_maxcol_takizuka_abe(
             idx2=part2,
             bmax=bmax,
             delta_t=delta_t,
-            n_l=nl,
+            n_l=n_l,
             particles=particles,
         )
         # That's one less collision to do
