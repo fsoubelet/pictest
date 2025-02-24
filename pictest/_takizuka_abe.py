@@ -14,11 +14,13 @@ import numba
 import numpy as np
 
 from scipy.constants import c, epsilon_0
+from sympy import Ne
 
 from pictest._cells import find_index_of_all_particles_in_given_cell
 
 if TYPE_CHECKING:
     import xtrack as xt
+
     from pictest._meshgrid import MeshGrid
 
 
@@ -457,6 +459,55 @@ def _draw_delta(
     variance = (delta_t * (q0**4 * n_l * coulog)) / (
         8 * np.pi * epsilon_0**2 * m_alpha_beta**2 * u**3
     )
+    # ----------------------------------------------
+    # From the variance we get stdev and draw delta
+    scale = np.sqrt(variance)  # standard deviation
+    return np.random.normal(0, scale=scale)
+
+
+@numba.jit
+def _draw_delta_gjonaj(
+    q0: numba.float64,  # type: ignore
+    Ne: numba.float64,  # type: ignore
+    coulog: numba.float64,  # type: ignore
+    m_reduced: numba.float64,  # type: ignore
+    u: numba.float64,  # type: ignore
+    delta_t: numba.float64,  # type: ignore
+) -> numba.float64:  # type: ignore
+    """
+    Draws a random value for the variable delta, which is
+    used to later determine the scattering angle THETA. Its
+    properties are described in Eq (1) in Gjonaj's paper.
+
+    Parameters
+    ----------
+    q0 : float64
+        The charge of the particles in the pair (same
+        species), in [e].
+    Ne : float64
+        The species density in the cell (number of parts
+        divided by the cell volume), in [m^-3].
+    coulog : float64
+        The Coulomb logarithm for the whole bunch.
+    m_reduced : float64
+        The reduced mass for the collided pair, as
+        in Eq (1) of Gjonaj's paper, in [kg]. In our
+        case of same-species this resolves to the
+        mass_kg / 2.
+    u : float64
+        The norm of the u vector from Eq (1) in T&A.
+    delta_t : float64
+        The time interval for the IBS interaction, in [s].
+
+    Returns
+    -------
+    delta : float64
+        A random number from the relevant distribution.
+    """
+    # ----------------------------------------------
+    # We compute the variance as described by
+    # Eq. (1) of Gjonaj's paper
+    variance = delta_t * (q0**4 * Ne * coulog) / (8 * np.pi * epsilon_0**2 * m_reduced**2 * u**3)
     # ----------------------------------------------
     # From the variance we get stdev and draw delta
     scale = np.sqrt(variance)  # standard deviation
