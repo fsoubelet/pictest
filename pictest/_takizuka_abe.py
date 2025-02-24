@@ -19,6 +19,7 @@ from pictest._cells import find_index_of_all_particles_in_given_cell
 
 if TYPE_CHECKING:
     import xtrack as xt
+    from pictest._meshgrid import MeshGrid
 
 
 # ----- Cell Scattering Functions ----- #
@@ -27,8 +28,7 @@ if TYPE_CHECKING:
 def scatter_cell_maxcol_takizuka_abe(
     cell_number: int,
     attributions: np.ndarray,
-    volume: float,
-    coulog: float,
+    meshgrid: MeshGrid,
     delta_t: float,
     particles: xt.Particles,
     max_collisions: int,
@@ -81,9 +81,13 @@ def scatter_cell_maxcol_takizuka_abe(
     weight = particles.weight[0]  # same for all, accounts for real part / macropart
     Ni = n_macroparts * weight  # only one species, Ni = Ne
     N0 = np.sum(particles.state > 0) * weight  # all alive parts, "particle number in a cloud"
-    V0 = volume  # happens to be the same for all cells
+    V0 = meshgrid.volume  # happens to be the same for all cells
     n_l = Ni * N0 / V0  # since Ni = Ne
     print(f"{Ni=}, {N0=}, {V0=}, {n_l=}")
+    # ----------------------------------------------
+    # We get bmax (for coulomb log) which is the same
+    # for all collisions in this cell
+    bmax = max(meshgrid.dx, meshgrid.dy)
     # ----------------------------------------------
     # Now we collide as long as we have to
     while n_collisions > 0:
@@ -91,7 +95,7 @@ def scatter_cell_maxcol_takizuka_abe(
         collide_particle_pair_takizuka_abe(
             idx1=part1,
             idx2=part2,
-            coulog=coulog,
+            bmax=bmax,
             delta_t=delta_t,
             n_l=n_l,
             particles=particles,
@@ -179,7 +183,7 @@ def scatter_cell_oneperpart_takizuka_abe(
 
 
 def collide_particle_pair_takizuka_abe(
-    idx1: int, idx2: int, coulog: float, n_l: float, delta_t: float, particles: xt.Particles
+    idx1: int, idx2: int, bmax: float, n_l: float, delta_t: float, particles: xt.Particles
 ) -> None:
     """
     Apply the Coulomb scattering to particles denoted by 'idx1'
@@ -191,8 +195,9 @@ def collide_particle_pair_takizuka_abe(
         Index of the first particle of the pair.
     idx2 : int
         Index of the second particle of the pair.
-    coulog : float64
-        The Coulomb logarithm for the whole bunch.
+    bmax : float64
+        The maximum impact parameter, which is
+        restricted to the size of the cell.
     n_l : float64
         The lower density between n_alpha and n_beta.
         These are defined in the "determination of pairs"
@@ -218,7 +223,7 @@ def collide_particle_pair_takizuka_abe(
     # ----------------------------------------------
     # Compute the momentum deltas (compiled code)
     delta_px, delta_py, delta_pz = takizuka_abe_collision_deltas(
-        px1, px2, py1, py2, delta1, delta2, q0, mass0, coulog, delta_t, n_l
+        px1, px2, py1, py2, delta1, delta2, q0, mass0, bmax, delta_t, n_l
     )
     # ----------------------------------------------
     # Apply the deltas to the particles (add to part1, remove from part2)
@@ -243,7 +248,7 @@ def takizuka_abe_collision_deltas(
     delta2: numba.float64,  # type: ignore
     q0: numba.float64,  # type: ignore
     mass0: numba.float64,  # type: ignore
-    coulog: numba.float64,  # type: ignore
+    bmax: numba.float64,  # type: ignore
     delta_t: numba.float64,  # type: ignore
     n_l: numba.float64,  # type: ignore
 ) -> tuple[numba.float64, numba.float64, numba.float64]:  # type: ignore
@@ -277,8 +282,9 @@ def takizuka_abe_collision_deltas(
     mass0 : float64
         The mass of the particles in the pair (same species), in
         [eV] as `xtrack` gives us.
-    coulog : float64
-        The Coulomb logarithm for the whole bunch.
+    bmax : float64
+        The maximum impact parameter, which is restricted to the
+        size of the cell in which we are colliding.
     delta_t : float64
         The time interval for the IBS interaction, in [s].
     n_l : float64
@@ -323,7 +329,6 @@ def takizuka_abe_collision_deltas(
     # We compute a coulomb log for this collision
     # according to bmin and bmax of E. Gjonaj
     bmin = q0**2 / (m_alpha_beta * u**2)
-    bmax = max(dx, dy)  # same for all collisions, should be passed!
     coulog = np.log(bmax / bmin)
     # ----------------------------------------------
     # We draw a value for delta according to Eq (8a)
