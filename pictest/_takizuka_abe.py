@@ -166,17 +166,21 @@ def scatter_cell_oneperpart_takizuka_abe(
     # n_l = Ni * N0 / V0  # since Ni = Ne
     # print(f"{Ni=}, {N0=}, {V0=}, {n_l=}")
     # ----------------------------------------------
+    # We get bmax (for coulomb log) which is the same
+    # for all collisions in this cell
+    bmax = max(meshgrid.dx, meshgrid.dy)
+    # ----------------------------------------------
     # Now we collide for every single possible pair
     try:
         for part1, part2 in collided_pairs:
             collide_particle_pair_takizuka_abe(
-                idx1=part1,
-                idx2=part2,
-                coulog=coulog,
-                delta_t=delta_t,
-                n_l=n_l,
-                particles=particles,
-            )
+            idx1=part1,
+            idx2=part2,
+            bmax=bmax,
+            delta_t=delta_t,
+            n_l=n_l,
+            particles=particles,
+        )
     except ValueError:  # happens for an odd number of particles (last pair has no 'part2')
         pass
 
