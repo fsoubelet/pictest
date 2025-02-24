@@ -302,7 +302,8 @@ def takizuka_abe_collision_deltas(
     deltas : tuple[float64, float64, float64]
         The momentum deltas in horizontal, vertical
         and longitudinal momenta. These are already the
-        amount to apply to particles.
+        amount to apply to particles (positive to the
+        first in the pair, negative to the other).
     """
     # ----------------------------------------------
     # First define the 'u' variables from Eq. (1)
