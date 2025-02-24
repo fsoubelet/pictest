@@ -383,6 +383,98 @@ def takizuka_abe_collision_deltas(
 # ----- Private Helpers for Takizuka and Abe ----- #
 
 
+@numba.jit
+def _draw_PHI() -> numba.float64:  # type: ignore
+    """
+    Draws a random value for the azimuthal angle PHI,
+    first seen in Eq (3) in Takizuka and Abe's paper
+    and described in the sentence just below.
+
+    Returns
+    -------
+    PHI : float64
+        A random number between 0 and 2pi.
+    """
+    return np.random.uniform(0, 2 * np.pi)
+
+
+@numba.jit
+def _draw_delta(
+    q0: numba.float64,  # type: ignore
+    m_alpha_beta: numba.float64,  # type: ignore
+    coulog: numba.float64,  # type: ignore
+    delta_t: numba.float64,  # type: ignore
+    n_l: numba.float64,  # type: ignore
+    u: numba.float64,  # type: ignore
+) -> numba.float64:  # type: ignore
+    """
+    Draws a random value for the variable delta, which is
+    used to later determine the scattering angle THETA. Its
+    properties are described in Eq (8a) in Takizuka and Abe's
+    paper.
+
+    Parameters
+    ----------
+    q0 : float64
+        The charge of the particles in the pair (same species),
+        in [e].
+    m_alpha_beta : float64
+        The m_alpha_beta term of Eq (6) for the pair of
+        collided particles. In our case of same-species
+        this resolves to mass_g / 2. Units [-].
+    coulog : float64
+        The Coulomb logarithm for the whole bunch.
+    delta_t : float64
+        The time interval for the IBS interaction, in [s].
+    n_l : float64
+        The lower density between n_alpha and n_beta. These
+        are defined in the "determination of pairs" paragraph.
+        Note that n_alpha = n_beta = n_l (only one species).
+    u : float64
+        The transverse velocity of the particles.
+
+    Returns
+    -------
+    delta : float64
+        A random number from the relevant distribution.
+    """
+    # ----------------------------------------------
+    # We compute the variance as described by Eq. (8a)
+    # Remember e_alpha = e_beta = q0 (only one species)
+    variance = (delta_t * (q0**4 * n_l * coulog)) / (
+        8 * np.pi * epsilon_0**2 * m_alpha_beta**2 * u**3
+    )
+    # ----------------------------------------------
+    # From the variance we get stdev and draw delta
+    scale = np.sqrt(variance)  # standard deviation
+    return np.random.normal(0, scale=scale)
+
+
+# ----- Cheating functions for testing purposes ----- #
+
+
+@numba.jit
+def _draw_THETA() -> numba.float64:  # type: ignore
+    """
+    Traditionnally we would determine the properties
+    of the Gaussian distribution from which to draw
+    delta, and then compute theta from the drawn
+    variable as an arcsin. Considering arcsing yields
+    values between -pi/2 and pi/2, for or a simplified
+    (and faster) model we can draw THETA via a uniform
+    draw from this range.
+
+    Returns
+    -------
+    THETA : float64
+        A random number between -pi/2 and pi/2.
+    """
+    return np.random.uniform(-np.pi / 2, np.pi / 2)
+
+
+# ----- UNUSED BUT NEEDED FOR SOME NOTEBOOKS ----- #
+
+
 # OBSOLETE! We actually don't need this to compute the
 # little u since it's just the norm of (ux, uy, uz).T
 @numba.jit
@@ -504,89 +596,3 @@ def _compute_theta(
     # Otherwise attempt the second root of the equation
     second_root = -2 * np.atan((term_one + uz + sqrt_term) / denominator)
     return second_root
-
-
-@numba.jit
-def _draw_PHI() -> numba.float64:  # type: ignore
-    """
-    Draws a random value for the azimuthal angle PHI,
-    first seen in Eq (3) in Takizuka and Abe's paper
-    and described in the sentence just below.
-
-    Returns
-    -------
-    PHI : float64
-        A random number between 0 and 2pi.
-    """
-    return np.random.uniform(0, 2 * np.pi)
-
-
-@numba.jit
-def _draw_delta(
-    q0: numba.float64,  # type: ignore
-    m_alpha_beta: numba.float64,  # type: ignore
-    coulog: numba.float64,  # type: ignore
-    delta_t: numba.float64,  # type: ignore
-    n_l: numba.float64,  # type: ignore
-    u: numba.float64,  # type: ignore
-) -> numba.float64:  # type: ignore
-    """
-    Draws a random value for the variable delta, which is
-    used to later determine the scattering angle THETA. Its
-    properties are described in Eq (8a) in Takizuka and Abe's
-    paper.
-
-    Parameters
-    ----------
-    q0 : float64
-        The charge of the particles in the pair (same species),
-        in [e].
-    m_alpha_beta : float64
-        The m_alpha_beta term of Eq (6) for the pair of
-        collided particles. In our case of same-species
-        this resolves to mass_g / 2. Units [-].
-    coulog : float64
-        The Coulomb logarithm for the whole bunch.
-    delta_t : float64
-        The time interval for the IBS interaction, in [s].
-    n_l : float64
-        The lower density between n_alpha and n_beta. These
-        are defined in the "determination of pairs" paragraph.
-        Note that n_alpha = n_beta = n_l (only one species).
-    u : float64
-        The transverse velocity of the particles.
-
-    Returns
-    -------
-    delta : float64
-        A random number from the relevant distribution.
-    """
-    # ----------------------------------------------
-    # We compute the variance as described by Eq. (8a)
-    # Remember e_alpha = e_beta = q0 (only one species)
-    variance = (delta_t * (q0**4 * n_l * coulog)) / (
-        8 * np.pi * epsilon_0**2 * m_alpha_beta**2 * u**3
-    )
-    # ----------------------------------------------
-    # From the variance we get stdev and draw delta
-    scale = np.sqrt(variance)  # standard deviation
-    return np.random.normal(0, scale=scale)
-
-
-@numba.jit
-def _draw_THETA() -> numba.float64:  # type: ignore
-    """
-    Traditionnally we would determine the properties
-    of the Gaussian distribution from which to draw
-    delta, and then compute theta from the drawn
-    variable as an arcsin. Considering arcsing yields
-    values between -pi/2 and pi/2, for or a simplified
-    (and faster) model we can draw THETA via a uniform
-    draw from this range.
-
-    Returns
-    -------
-    THETA : float64
-        A random number between -pi/2 and pi/2.
-    """
-    return np.random.uniform(-np.pi / 2, np.pi / 2)
