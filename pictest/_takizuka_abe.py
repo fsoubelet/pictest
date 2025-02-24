@@ -174,13 +174,13 @@ def scatter_cell_oneperpart_takizuka_abe(
     try:
         for part1, part2 in collided_pairs:
             collide_particle_pair_takizuka_abe(
-            idx1=part1,
-            idx2=part2,
-            bmax=bmax,
-            delta_t=delta_t,
-            n_l=n_l,
-            particles=particles,
-        )
+                idx1=part1,
+                idx2=part2,
+                bmax=bmax,
+                delta_t=delta_t,
+                n_l=n_l,
+                particles=particles,
+            )
     except ValueError:  # happens for an odd number of particles (last pair has no 'part2')
         pass
 
@@ -514,28 +514,6 @@ def _draw_delta_gjonaj(
     return np.random.normal(0, scale=scale)
 
 
-# ----- Cheating functions for testing purposes ----- #
-
-
-@numba.jit
-def _draw_THETA() -> numba.float64:  # type: ignore
-    """
-    Traditionnally we would determine the properties
-    of the Gaussian distribution from which to draw
-    delta, and then compute theta from the drawn
-    variable as an arcsin. Considering arcsing yields
-    values between -pi/2 and pi/2, for or a simplified
-    (and faster) model we can draw THETA via a uniform
-    draw from this range.
-
-    Returns
-    -------
-    THETA : float64
-        A random number between -pi/2 and pi/2.
-    """
-    return np.random.uniform(-np.pi / 2, np.pi / 2)
-
-
 # ----- UNUSED BUT NEEDED FOR SOME NOTEBOOKS ----- #
 
 # Code that called the below in 'takizuka_abe_collision_deltas'
@@ -546,6 +524,7 @@ def _draw_THETA() -> numba.float64:  # type: ignore
 # phi = _compute_phi(ux, uy)
 # theta = _compute_theta(ux, uy, uz, phi)
 # u = np.sin(theta) * np.cos(phi) * ux + np.sin(theta) * np.sin(phi) * uy + np.cos(theta) * uz
+
 
 @numba.jit
 def _compute_phi(
