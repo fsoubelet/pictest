@@ -374,10 +374,10 @@ def takizuka_abe_collision_deltas(
     # And finally we can return the computed momentum deltas
     # TODO: remove the prints when done testing
     print(
-        "phi=",
-        phi,
-        "theta=",
-        theta,
+        # "phi=",
+        # phi,
+        # "theta=",
+        # theta,
         "u=",
         u,
         "PHI=",
