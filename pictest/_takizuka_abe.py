@@ -81,7 +81,7 @@ def scatter_cell_maxcol_takizuka_abe(
     weight = particles.weight[0]  # same for all, accounts for real part / macropart
     Ni = n_macroparts * weight  # only one species, Ni = Ne
     N0 = np.sum(particles.state > 0) * weight  # all alive parts, "particle number in a cloud"
-    V0 = meshgrid.volume  # happens to be the same for all cells
+    V0 = meshgrid.cell_volume  # happens to be the same for all cells
     n_l = Ni * N0 / V0  # since Ni = Ne
     print(f"{Ni=}, {N0=}, {V0=}, {n_l=}")
     # ----------------------------------------------
