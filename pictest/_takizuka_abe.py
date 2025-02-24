@@ -362,7 +362,7 @@ def takizuka_abe_collision_deltas(
     else:
         delta_ux = u * np.sin(THETA) * np.cos(PHI)
         delta_uy = u * np.sin(THETA) * np.sin(PHI)
-        delta_uz = - u * (1 - np.cos(THETA))
+        delta_uz = -u * (1 - np.cos(THETA))
     # ----------------------------------------------
     # These are deltas to apply to velocities (see Eq (5a))
     # so we convert to deltas to apply to momenta (used in
@@ -373,22 +373,7 @@ def takizuka_abe_collision_deltas(
     # ----------------------------------------------
     # And finally we can return the computed momentum deltas
     # TODO: remove the prints when done testing
-    print(
-        # "phi=",
-        # phi,
-        # "theta=",
-        # theta,
-        "u=",
-        u,
-        "PHI=",
-        PHI,
-        "coulog=",
-        coulog,
-        "delta=",
-        delta,
-        "THETA=",
-        THETA,
-    )
+    print("u=", u, "PHI=", PHI, "coulog=", coulog, "delta=", delta, "THETA=", THETA)
     print("delta_px=", res_delta_px, "delta_py=", res_delta_py, "delta_pz=", res_delta_pz)
     return res_delta_px, res_delta_py, res_delta_pz
 
