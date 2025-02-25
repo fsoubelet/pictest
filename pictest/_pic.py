@@ -82,7 +82,7 @@ class IBSParticleInCell(IBSKick):
         nx: int,
         ny: int,
         nz: int,
-        model: Literal["SIRE", "T&A"],
+        model: Literal["SIRE", "T&A"],  # should not try SIRE any longer, maybe remove
         cell_method: str,
         delta_t: float,
         **kwargs,
