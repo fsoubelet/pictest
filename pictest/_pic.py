@@ -167,9 +167,7 @@ class IBSParticleInCell(IBSKick):
         self.scatter_cell: Callable = partial(cell_scatter_function, max_collisions=max_collisions)
         # ----------------------------------------------
         # The following are needed but start unset. They are
-        # set when calling 'pictest.install_ibs_pic()'
-        self._name: str = None  # for the t&a model coulog
-        self._twiss: xt.TwissTable = None  # for the t&a model coulog
+        # set when calling 'pictest._setup.install_ibs_pic()'
         self._scale_strength: float = 0  # by default element does not "track"
 
     def __repr__(self) -> str:
