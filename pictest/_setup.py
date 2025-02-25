@@ -115,7 +115,6 @@ def install_ibs_pic(
             delta_t=kdeltat if kdeltat is not None else deltat,
             max_collisions=max_collisions,
         )
-        pic_element._name = pic_name
         pic_element._scale_strength = 1
         # Store these for later to be inserted
         ibs_elements.append(pic_element)
@@ -124,12 +123,6 @@ def install_ibs_pic(
     # ----------------------------------------------
     # Insert the created elements in the line
     line._insert_thin_elements_at_s(insertions)
-    # ----------------------------------------------
-    # Now we run a twiss (4D) which includes the inserted PICs
-    # and we provide it to all inserted elements
-    twiss = line.twiss(method="4d")
-    for pic in ibs_elements:
-        pic._twiss = twiss
     # ----------------------------------------------
     # Restore the buffer from before and the elements
     line.build_tracker(_buffer=_buffer)
