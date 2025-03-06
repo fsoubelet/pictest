@@ -70,7 +70,7 @@ def install_ibs_pic(
     method = kwargs.pop("method")  # should be provided
     kdeltat = kwargs.pop("delta_t", None)  # to override
     # if method.lower() == "maxcol":
-    max_collisions = kwargs.pop("max_collisions")
+    max_collisions = kwargs.pop("max_collisions", None)
     # ----------------------------------------------
     # Handle the possibly existing line tracker
     if _buffer is None:
